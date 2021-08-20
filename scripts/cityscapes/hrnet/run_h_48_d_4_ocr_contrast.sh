@@ -26,6 +26,7 @@ PRETRAINED_MODEL="${ASSET_ROOT}/hrnetv2_w48_imagenet_pretrained.pth"
 MAX_ITERS=40000
 BATCH_SIZE=2
 BASE_LR=0.01
+$1 = "train"
 
 if [ "$1"x == "train"x ]; then
   python -u main_contrastive.py --configs ${CONFIGS} \
