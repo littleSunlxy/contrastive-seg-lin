@@ -3,12 +3,12 @@ SCRIPTPATH="$( cd "$(dirname "$0")" >/dev/null 2>&1 ; pwd -P )"
 cd $SCRIPTPATH
 cd ../../../
 
-DATA_ROOT=$3
-SCRATCH_ROOT=$4
+DATA_ROOT="data"
+SCRATCH_ROOT="data"
 ASSET_ROOT=${DATA_ROOT}
 
 DATA_DIR="${DATA_ROOT}/Cityscapes"
-SAVE_DIR="${SCRATCH_ROOT}/Cityscapes/seg_results/"
+SAVE_DIR="${SCRATCH_ROOT}/cityscapes_seg_results/"
 BACKBONE="hrnet48"
 
 CONFIGS="configs/cityscapes/H_48_D_4.json"
