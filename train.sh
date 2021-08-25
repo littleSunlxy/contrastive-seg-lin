@@ -1,4 +1,4 @@
-DATA_ROOT="/home/hadoop-automl/cephfs/data/linxinyang/dataset/cityscapes"
+DATA_ROOT="/home/hadoop-automl/cephfs/data/zhaowangbo/dataset/cityscapes2"
 SCRATCH_ROOT="output"
 ASSET_ROOT=${DATA_ROOT}
 MODEL_ROOT="/home/hadoop-automl/cephfs/data/linxinyang/models"
