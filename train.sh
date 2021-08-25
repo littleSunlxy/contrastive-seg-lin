@@ -29,7 +29,7 @@ python -u main_contrastive.py --configs ${CONFIGS} \
                        --log_to_file n \
                        --backbone ${BACKBONE} \
                        --model_name ${MODEL_NAME} \
-                       --gpu 8 \
+                       --gpu 1 \
                        --data_dir ${DATA_DIR} \
                        --loss_type ${LOSS_TYPE} \
                        --max_iters ${MAX_ITERS} \
