@@ -4,11 +4,11 @@ cd $SCRIPTPATH
 cd ../../../
 
 
-DATA_ROOT="data"
+DATA_ROOT="/home/hadoop-automl/cephfs/data/linxinyang/dataset/cityscapes"
 SCRATCH_ROOT="data"
 ASSET_ROOT=${DATA_ROOT}
 
-DATA_DIR="${DATA_ROOT}/Cityscapes"
+DATA_DIR="${DATA_ROOT}/cityscapes"
 SAVE_DIR="${SCRATCH_ROOT}/cityscapes_seg_results/"
 BACKBONE="hrnet48"
 
