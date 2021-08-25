@@ -16,8 +16,8 @@ CHECKPOINTS_ROOT="${SCRATCH_ROOT}/Cityscapes/"
 CHECKPOINTS_NAME="${MODEL_NAME}_lr1x_0825"
 PRETRAINED_MODEL="${MODEL_ROOT}/hrnetv2_w48_imagenet_pretrained.pth"
 LOG_FILE="${SCRATCH_ROOT}/logs/Cityscapes/${CHECKPOINTS_NAME}.log"
-MAX_ITERS=40000
-BATCH_SIZE=2
+MAX_ITERS=20000
+BATCH_SIZE=4
 BASE_LR=0.01
 
 
@@ -29,7 +29,7 @@ python -u main_contrastive.py --configs ${CONFIGS} \
                        --log_to_file n \
                        --backbone ${BACKBONE} \
                        --model_name ${MODEL_NAME} \
-                       --gpu 1 \
+                       --gpu [0, 1, 2, 3, 4, 5, 6, 7] \
                        --data_dir ${DATA_DIR} \
                        --loss_type ${LOSS_TYPE} \
                        --max_iters ${MAX_ITERS} \
