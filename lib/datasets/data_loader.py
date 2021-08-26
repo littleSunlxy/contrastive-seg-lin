@@ -95,6 +95,8 @@ class DataLoader(object):
         return loader, sampler
 
     def get_trainloader(self):
+        import pdb;
+        pdb.set_trace()
         if self.configer.exists('data', 'use_edge') and self.configer.get('data', 'use_edge') == 'ce2p':
             """
             ce2p manner:
@@ -110,7 +112,6 @@ class DataLoader(object):
             """
             Log.info('use distance transform offset loader for train...')
             klass = DTOffsetLoader
-
         elif self.configer.exists('train', 'loader') and \
                 (self.configer.get('train', 'loader') == 'ade20k'
                  or self.configer.get('train', 'loader') == 'pascal_context'
