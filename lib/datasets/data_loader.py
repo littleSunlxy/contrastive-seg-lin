@@ -27,7 +27,7 @@ from lib.datasets.tools.collate import collate
 from lib.utils.tools.logger import Logger as Log
 
 from lib.utils.distributed import get_world_size, get_rank, is_distributed
-
+from lib.datasets.xiashi.dataset_cv import user_scattered_collate, user_collate_fn, TrainDataset_cv, ValDataset_cv
 
 class DataLoader(object):
 
@@ -97,87 +97,127 @@ class DataLoader(object):
     def get_trainloader(self):
         import pdb;
         pdb.set_trace()
-        if self.configer.exists('data', 'use_edge') and self.configer.get('data', 'use_edge') == 'ce2p':
-            """
-            ce2p manner:
-            load both the ground-truth label and edge.
-            """
-            Log.info('use edge (follow ce2p) for train...')
-            klass = LipLoader
+        if self.configer.use_xiashi_dataset:
+            import torch.distributed as dist
+            gpu_nums = len(self.configer.get('gpu'))
+            b_per_gpu = self.configer.get('train', 'batch_size')/gpu_nums
 
-        elif self.configer.exists('data', 'use_dt_offset') or self.configer.exists('data', 'pred_dt_offset'):
-            """
-            dt-offset manner:
-            load both the ground-truth label and offset (based on distance transform).
-            """
-            Log.info('use distance transform offset loader for train...')
-            klass = DTOffsetLoader
-        elif self.configer.exists('train', 'loader') and \
-                (self.configer.get('train', 'loader') == 'ade20k'
-                 or self.configer.get('train', 'loader') == 'pascal_context'
-                 or self.configer.get('train', 'loader') == 'pascal_voc'
-                 or self.configer.get('train', 'loader') == 'coco_stuff'
-                 or self.configer.get('train', 'loader') == 'camvid'):
-            """
-            ADE20KLoader manner:
-            support input images of different shapes.
-            """
-            Log.info('use ADE20KLoader (diverse input shape) for train...')
-            klass = ADE20KLoader
+            dataset_train = TrainDataset_cv(
+                self.configer.get('xiashi', 'root_dataset'),
+                self.configer.get('xiashi', 'list_train'),
+                self.configer.get('xiashi', 'crop_type'),
+                batch_per_gpu=b_per_gpu,
+                world_size=gpu_nums, rank=dist.get_rank())
+
+            trainloader = torch.utils.data.DataLoader(dataset_train, batch_size=1,
+                                                       num_workers=self.configer.get('xiashi', 'workers') // gpu_nums,
+                                                       collate_fn=user_collate_fn,
+                                                       pin_memory=True,
+                                                       drop_last=True,
+                                                       )
         else:
-            """
-            Default manner:
-            + support input images of the same shapes.
-            + support distributed training (the performance is more un-stable than non-distributed manner)
-            """
-            Log.info('use the DefaultLoader for train...')
-            klass = DefaultLoader
-        loader, sampler = self.get_dataloader_sampler(klass, 'train', 'train')
-        trainloader = data.DataLoader(
-            loader,
-            batch_size=self.configer.get('train', 'batch_size') // get_world_size(), pin_memory=True,
-            num_workers=self.configer.get('data', 'workers') // get_world_size(),
-            sampler=sampler,
-            shuffle=(sampler is None),
-            drop_last=self.configer.get('data', 'drop_last'),
-            collate_fn=lambda *args: collate(
-                *args, trans_dict=self.configer.get('train', 'data_transformer')
+            if self.configer.exists('data', 'use_edge') and self.configer.get('data', 'use_edge') == 'ce2p':
+                """
+                ce2p manner:
+                load both the ground-truth label and edge.
+                """
+                Log.info('use edge (follow ce2p) for train...')
+                klass = LipLoader
+
+            elif self.configer.exists('data', 'use_dt_offset') or self.configer.exists('data', 'pred_dt_offset'):
+                """
+                dt-offset manner:
+                load both the ground-truth label and offset (based on distance transform).
+                """
+                Log.info('use distance transform offset loader for train...')
+                klass = DTOffsetLoader
+            elif self.configer.exists('train', 'loader') and \
+                    (self.configer.get('train', 'loader') == 'ade20k'
+                     or self.configer.get('train', 'loader') == 'pascal_context'
+                     or self.configer.get('train', 'loader') == 'pascal_voc'
+                     or self.configer.get('train', 'loader') == 'coco_stuff'
+                     or self.configer.get('train', 'loader') == 'camvid'):
+                """
+                ADE20KLoader manner:
+                support input images of different shapes.
+                """
+                Log.info('use ADE20KLoader (diverse input shape) for train...')
+                klass = ADE20KLoader
+
+            else:
+                """
+                Default manner:
+                + support input images of the same shapes.
+                + support distributed training (the performance is more un-stable than non-distributed manner)
+                """
+                Log.info('use the DefaultLoader for train...')
+                klass = DefaultLoader
+
+            loader, sampler = self.get_dataloader_sampler(klass, 'train', 'train')
+            trainloader = data.DataLoader(
+                loader,
+                batch_size=self.configer.get('train', 'batch_size') // get_world_size(), pin_memory=True,
+                num_workers=self.configer.get('data', 'workers') // get_world_size(),
+                sampler=sampler,
+                shuffle=(sampler is None),
+                drop_last=self.configer.get('data', 'drop_last'),
+                collate_fn=lambda *args: collate(
+                    *args, trans_dict=self.configer.get('train', 'data_transformer')
+                )
             )
-        )
         return trainloader
 
     def get_valloader(self, dataset=None):
         dataset = 'val' if dataset is None else dataset
 
-        if self.configer.exists('data', 'use_dt_offset') or self.configer.exists('data', 'pred_dt_offset'):
-            """
-            dt-offset manner:
-            load both the ground-truth label and offset (based on distance transform).
-            """
-            Log.info('use distance transform based offset loader for val ...')
-            klass = DTOffsetLoader
+        import torch.distributed as dist
+        gpu_nums = len(self.configer.get('gpu'))
+        batch_size = 1
 
-        elif self.configer.get('method') == 'fcn_segmentor':
-            """
-            default manner:
-            load the ground-truth label.
-            """
-            Log.info('use DefaultLoader for val ...')
-            klass = DefaultLoader
+        if self.configer.use_xiashi_dataset:
+            dataset_val = ValDataset_cv(
+                self.configer.get('xiashi', 'root_dataset'),
+                self.configer.get('xiashi', 'list_val'),
+                world_size=gpu_nums, rank=dist.get_rank())
+
+            valloader = torch.utils.data.DataLoader(
+                dataset_val,
+                batch_size=batch_size,
+                shuffle=False,
+                collate_fn=user_scattered_collate,
+                num_workers=self.configer.get('xiashi', 'workers') // gpu_nums,
+                drop_last=True)
+
         else:
-            Log.error('Method: {} loader is invalid.'.format(self.configer.get('method')))
-            return None
+            if self.configer.exists('data', 'use_dt_offset') or self.configer.exists('data', 'pred_dt_offset'):
+                """
+                dt-offset manner:
+                load both the ground-truth label and offset (based on distance transform).
+                """
+                Log.info('use distance transform based offset loader for val ...')
+                klass = DTOffsetLoader
 
-        loader, sampler = self.get_dataloader_sampler(klass, 'val', dataset)
-        valloader = data.DataLoader(
-            loader,
-            sampler=sampler,
-            batch_size=self.configer.get('val', 'batch_size') // get_world_size(), pin_memory=True,
-            num_workers=self.configer.get('data', 'workers'), shuffle=False,
-            collate_fn=lambda *args: collate(
-                *args, trans_dict=self.configer.get('val', 'data_transformer')
+            elif self.configer.get('method') == 'fcn_segmentor':
+                """
+                default manner:
+                load the ground-truth label.
+                """
+                Log.info('use DefaultLoader for val ...')
+                klass = DefaultLoader
+            else:
+                Log.error('Method: {} loader is invalid.'.format(self.configer.get('method')))
+                return None
+
+            loader, sampler = self.get_dataloader_sampler(klass, 'val', dataset)
+            valloader = data.DataLoader(
+                loader,
+                sampler=sampler,
+                batch_size=self.configer.get('val', 'batch_size') // get_world_size(), pin_memory=True,
+                num_workers=self.configer.get('data', 'workers'), shuffle=False,
+                collate_fn=lambda *args: collate(
+                    *args, trans_dict=self.configer.get('val', 'data_transformer')
+                )
             )
-        )
         return valloader
 
     def get_testloader(self, dataset=None):

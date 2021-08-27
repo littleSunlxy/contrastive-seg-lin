@@ -32,6 +32,7 @@ python -u main_contrastive.py --configs ${CONFIGS} \
                        --backbone ${BACKBONE} \
                        --model_name ${MODEL_NAME} \
                        --gpu 5\
+                       --use_xiashi_dataset \
                        --data_dir ${DATA_DIR} \
                        --loss_type ${LOSS_TYPE} \
                        --max_iters ${MAX_ITERS} \

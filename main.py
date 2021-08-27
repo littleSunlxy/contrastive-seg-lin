@@ -86,6 +86,8 @@ if __name__ == "__main__":
                         dest='checkpoints:save_iters', help='The saving iters of checkpoint model.')
     parser.add_argument('--save_epoch', default=None, type=int,
                         dest='checkpoints:save_epoch', help='The saving epoch of checkpoint model.')
+    parser.add_argument('--use_xiashi_dataset',  action='store_true',
+                        dest='checkpoints:save_epoch', help='The saving epoch of checkpoint model.')
 
     # ***********  Params for model.  **********
     parser.add_argument('--model_name', default=None, type=str,
