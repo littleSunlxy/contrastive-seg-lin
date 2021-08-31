@@ -64,7 +64,7 @@ if __name__ == "__main__":
     parser.add_argument('--val_batch_size', default=None, type=int,
                         dest='val:batch_size', help='The batch size of validation.')
     parser.add_argument('--use_xiashi_dataset',  action='store_true',
-                        dest='checkpoints:save_epoch', help='The saving epoch of checkpoint model.')
+                        dest='data:use_xiashi_dataset', help='The saving epoch of checkpoint model.')
 
     # ***********  Params for checkpoint.  **********
     parser.add_argument('--checkpoints_root', default=None, type=str,
