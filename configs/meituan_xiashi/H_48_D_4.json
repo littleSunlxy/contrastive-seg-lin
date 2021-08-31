@@ -11,6 +11,7 @@
     "xiashi": {
       "root_dataset": "",
       "list_train": "/workdir/hrr/data/xiashi_data/segdata_6/mergev1.4/train_1-6_mergev1.4.odgt",
+      "list_val": "/workdir/hrr/data/xiashi_data/segdata_6/mergev1.4/test_1-6_mergev1.4.odgt",
       "crop_type": "crop_A",
       "workers": 8
     },
