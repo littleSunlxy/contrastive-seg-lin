@@ -5,7 +5,6 @@ from PIL import ImageFile
 
 ImageFile.LOAD_TRUNCATED_IMAGES = True
 import torch, os
-from config import cfg
 import torchvision.transforms.functional as TF
 from torchvision import transforms
 import random, math
