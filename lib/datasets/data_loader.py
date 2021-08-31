@@ -95,9 +95,7 @@ class DataLoader(object):
         return loader, sampler
 
     def get_trainloader(self):
-        import pdb;
-        pdb.set_trace()
-        if self.configer.use_xiashi_dataset:
+        if self.configer.get('use_xiashi_dataset'):
             import torch.distributed as dist
             gpu_nums = len(self.configer.get('gpu'))
             b_per_gpu = self.configer.get('train', 'batch_size')/gpu_nums
