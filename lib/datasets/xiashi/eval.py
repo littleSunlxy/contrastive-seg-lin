@@ -164,9 +164,8 @@ def evaluate(model, loader, epoch, configer, logger):
                 img = img.cuda()
                 # print(img.size())
 
-                scores_tmp = model(img, is_eval=True)
+                scores_tmp = model(img, is_eval=True)['seg']
 
-                import pdb; pdb.set_trace()
                 scores_tmp = nn.functional.interpolate(
                     scores_tmp, size=segSize, mode='bilinear', align_corners=False)
 
