@@ -166,6 +166,7 @@ def evaluate(model, loader, epoch, configer, logger):
 
                 scores_tmp = model(img, is_eval=True)
 
+                import pdb; pdb.set_trace()
                 scores_tmp = nn.functional.interpolate(
                     scores_tmp, size=segSize, mode='bilinear', align_corners=False)
 
