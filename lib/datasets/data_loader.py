@@ -173,7 +173,7 @@ class DataLoader(object):
         gpu_nums = len(self.configer.get('gpu'))
         batch_size = 1
 
-        if self.configer.use_xiashi_dataset:
+        if self.configer.get('data', 'use_xiashi_dataset'):
             dataset_val = ValDataset_cv(
                 self.configer.get('xiashi', 'root_dataset'),
                 self.configer.get('xiashi', 'list_val'),
