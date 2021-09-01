@@ -56,6 +56,7 @@ class BaseDataset_cv(torch.utils.data.Dataset):
         # max down sampling rate of network to avoid rounding during conv or pooling
         self.padding_constant = configer.get('xiashi', 'padding_constant')
 
+        import pdb; pdb.set_trace()
         # parse the input list
         self.parse_input_list(odgt, **kwargs)
         # mean and std
