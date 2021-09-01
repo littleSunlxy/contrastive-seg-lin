@@ -649,7 +649,7 @@ class TrainDataset_cv(BaseDataset_cv):
 
         output = dict()
         output['img'] = batch_images
-        output['seg_label'] = batch_segms
+        output['labelmap'] = batch_segms
         return output
 
     def __len__(self):
