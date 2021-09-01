@@ -1,4 +1,3 @@
-from lib.utils import as_numpy
 import os
 import time
 import argparse
@@ -13,6 +12,9 @@ import pandas as pd
 import pickle
 import cv2
 from PIL import Image
+import collections
+from torch.autograd import Variable
+
 
 from lib.datasets.xiashi.dataset_cv import  user_scattered_collate,ValDataset_cv, ValDataset_Split_cv
 from lib.datasets.xiashi.utils import extract_height, AverageMeter, colorEncode, parse_devices, accuracy, intersectionAndUnion, \
@@ -36,6 +38,19 @@ def parse_csv_merged(configer):
     # 'High_barrier ' 'High_tension ' 'Sky' 'Ignore ']
     #     print(colors, class_names)
     return colors, class_names
+
+
+def as_numpy(obj):
+    if isinstance(obj, collections.Sequence):
+        return [as_numpy(v) for v in obj]
+    elif isinstance(obj, collections.Mapping):
+        return {k: as_numpy(v) for k, v in obj.items()}
+    elif isinstance(obj, Variable):
+        return obj.data.cpu().numpy()
+    elif torch.is_tensor(obj):
+        return obj.cpu().numpy()
+    else:
+        return np.array(obj)
 
 
 def save_labelfile(info, pred, dir_result):
