@@ -75,8 +75,6 @@ if __name__ == "__main__":
                         dest='xiashi:list_val', help='The valing csv list.')
     parser.add_argument('--crop_type', default='crop_A', type=str,
                         dest='xiashi:crop_type', help='The crop type of xiashi data.')
-    parser.add_argument('--workers', default=8, type=int,
-                        dest='xiashi:workers', help='The crop type of xiashi data.')
 
 
     # ***********  Params for checkpoint.  **********
