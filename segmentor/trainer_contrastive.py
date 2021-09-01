@@ -303,10 +303,10 @@ class Trainer(object):
 
         self.configer.plus_one('epoch')
 
-    def __val(self, data_loader=None):
+    def con_val(self, data_loader=None):
         """
-          Validation function during the train phase.
-        """
+                  Validation function during the train phase.
+                """
         self.seg_net.eval()
         self.pixel_loss.eval()
         start_time = time.time()
@@ -399,6 +399,19 @@ class Trainer(object):
         self.evaluator.reset()
         self.seg_net.train()
         self.pixel_loss.train()
+
+
+    def __val(self, data_loader=None):
+        if self.configer.get('data', 'use_xiashi_dataset'):
+            data_loader = self.val_loader if data_loader is None else data_loader
+            print("evaluating on xiashi data: no split")
+
+
+            print("evaluating on xiashi data: splitA")
+
+
+        else:
+            self.con_val(data_loader)
 
     def train(self):
         # cudnn.benchmark = True
