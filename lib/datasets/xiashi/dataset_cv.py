@@ -685,28 +685,28 @@ class ValDataset_cv(BaseDataset_cv):
 
 
         img_resized_list = []
-        for this_short_size in self.imgValSizes:
-            # calculate target height and width
+        this_short_size = self.imgValSizes:
+        # calculate target height and width
 
-            scale = min(this_short_size / float(min(ori_height, ori_width)),    # ori:(3648, 4864)   scale:0.2741
-                        self.imgValMaxSize / float(max(ori_height, ori_width)))
-            target_height, target_width = int(ori_height * scale), int(ori_width * scale)  # 1824, 2432
+        scale = min(this_short_size / float(min(ori_height, ori_width)),  # ori:(3648, 4864)   scale:0.2741
+                    self.imgValMaxSize / float(max(ori_height, ori_width)))
+        target_height, target_width = int(ori_height * scale), int(ori_width * scale)  # 1824, 2432
 
-            # to avoid rounding in network
-            target_width = self.round2nearest_multiple(target_width, self.padding_constant) # 1880
-            target_height = self.round2nearest_multiple(target_height, self.padding_constant)  # 2504
+        # to avoid rounding in network
+        target_width = self.round2nearest_multiple(target_width, self.padding_constant)  # 1880
+        target_height = self.round2nearest_multiple(target_height, self.padding_constant)  # 2504
 
-            # resize images
-            # img_resized = imresize(img, (target_width, target_height), interp='bilinear')
-            img_resized = F.resize(img, target_height, target_width, interpolation=cv2.INTER_LINEAR)
+        # resize images
+        # img_resized = imresize(img, (target_width, target_height), interp='bilinear')
+        img_resized = F.resize(img, target_height, target_width, interpolation=cv2.INTER_LINEAR)
 
-            # print("imgdata size:", target_height, target_width) # (1880, 2504, 3)
+        # print("imgdata size:", target_height, target_width) # (1880, 2504, 3)
 
-            # print(img_resized.shape)
-            # image transform, to torch float tensor 3xHxW
-            img_resized = self.img_transform(img_resized)
-            img_resized = torch.unsqueeze(img_resized, 0)
-            img_resized_list.append(img_resized)
+        # print(img_resized.shape)
+        # image transform, to torch float tensor 3xHxW
+        img_resized = self.img_transform(img_resized)
+        img_resized = torch.unsqueeze(img_resized, 0)
+        img_resized_list.append(img_resized)
 
         # avoid output original size, out of memory
         segm = F.resize(segm, int(ori_height / 2), int(ori_width / 2), interpolation=cv2.INTER_NEAREST) # (1824, 2432)
