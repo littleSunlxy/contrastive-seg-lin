@@ -13,7 +13,7 @@
       "list_train": "/workdir/hrr/data/xiashi_data/segdata_6/mergev1.4/train_1-6_mergev1.4.odgt",
       "list_val": "/workdir/hrr/data/xiashi_data/segdata_6/mergev1.4/test_1-6_mergev1.4.odgt",
       "crop_type": "crop_A",
-      "imgSizes": "(1000,)",
+      "imgSizes": 1000,
       "imgMaxSize": 1500,
       "imgValSizes": "(1000,)",
       "imgValMaxSize": 1500,

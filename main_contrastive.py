@@ -75,7 +75,7 @@ if __name__ == "__main__":
                         dest='xiashi:list_val', help='The valing csv list.')
     parser.add_argument('--crop_type', default='crop_A', type=str,
                         dest='xiashi:crop_type', help='The crop type of xiashi data.')
-    parser.add_argument('--imgSizes', default='(1000,)', type=str,
+    parser.add_argument('--imgSizes', default=1000, type=int,
                         dest='xiashi:imgSizes', help='The training img size of xiashi data.')
     parser.add_argument('--imgMaxSize', default=1500, type=int,
                         dest='xiashi:imgMaxSize', help='The training img max size of xiashi data.')
