@@ -405,7 +405,7 @@ class Trainer(object):
         if self.configer.get('data', 'use_xiashi_dataset'):
             from lib.datasets.xiashi.eval import val_xiashidata
             print("evaluating on xiashi data: no split")
-            val_xiashidata(self.seg_net, self.configer, use_split=False)
+            #val_xiashidata(self.seg_net, self.configer, use_split=False)
             print("evaluating on xiashi data: splitA")
             val_xiashidata(self.seg_net, self.configer, use_split=True)
         else:
