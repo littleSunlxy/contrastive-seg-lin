@@ -10,17 +10,22 @@
     },
     "xiashi": {
       "root_dataset": "",
+      "DIR": "ckpt/ade20k-resnet50dilated-ppm_deepsup",
       "list_train": "/workdir/hrr/data/xiashi_data/segdata_6/mergev1.4/train_1-6_mergev1.4.odgt",
-      "list_val": "/workdir/hrr/data/xiashi_data/segdata_6/mergev1.4/test_1-6_mergev1.4.odgt",
+      "csv_file": "/workdir/hrr/data/xiashi_data/class_dict_all_merged_20_v1.4.csv",
       "crop_type": "crop_A",
-      "val_height": -1,
+      "data_crop": "True",
       "imgSizes": 1000,
       "imgMaxSize": 1500,
+
+      "val_height": -1,
       "imgValSizes": 1000,
       "imgValMaxSize": 1500,
       "imgTestSizes": [300, 375, 450, 525, 600],
       "imgTestMaxSize": 1000,
-      "padding_constant": 8
+      "padding_constant": 8,
+      "multi_checkpoints": "20~20",
+      "list_val": "/workdir/hrr/data/xiashi_data/segdata_6/mergev1.4/test_1-6_mergev1.4.odgt"
     },
     "train": {
       "batch_size": 16,

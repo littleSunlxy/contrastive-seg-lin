@@ -401,15 +401,13 @@ class Trainer(object):
         self.pixel_loss.train()
 
 
-    def __val(self, data_loader=None):
+    def __val(self, data_loader=None, epoch):
         if self.configer.get('data', 'use_xiashi_dataset'):
-            data_loader = self.val_loader if data_loader is None else data_loader
+            from lib.datasets.xiashi.eval import val_xiashidata
             print("evaluating on xiashi data: no split")
-
-
+            val_xiashidata(self.seg_net, epoch, self.configer, use_split=False)
             print("evaluating on xiashi data: splitA")
-
-
+            val_xiashidata(self.seg_net, epoch, self.configer, use_split=True)
         else:
             self.con_val(data_loader)
 

@@ -23,10 +23,11 @@ iou_mean = []
 iou_mean_except_ignore = []
 acc_mean = []
 inference_mean = []
+DIR = ""
 
 
-def parse_csv_merged(cfg):
-    colors_csv = pd.read_csv(cfg.DATASET.csv_file)
+def parse_csv_merged(configer):
+    colors_csv = pd.read_csv(configer.get('xiashi', 'csv_file'))
     _, ind = np.unique(colors_csv.iloc[:, -1].to_numpy(), return_index=True)
     colors = colors_csv.iloc[ind, 7: 10].values.astype(dtype=np.uint8)
     class_names = colors_csv.iloc[ind, 6].values
@@ -71,7 +72,7 @@ def visualize_result(data, pred, dir_result, colors):
 
 
 
-def evaluate(model, loader, epoch):
+def evaluate(model, loader, epoch, configer, logger):
     acc_meter = AverageMeter()
     intersection_meter = AverageMeter()
     union_meter = AverageMeter()
@@ -104,7 +105,7 @@ def evaluate(model, loader, epoch):
     num_per_height = defaultdict(int)
 
     # colors, class_names = parse_csv(cfg)
-    colors, class_names = parse_csv_merged(cfg)
+    colors, class_names = parse_csv_merged(configer)
 
     model.eval()
     save_path = epoch
@@ -141,52 +142,20 @@ def evaluate(model, loader, epoch):
 
         with torch.no_grad():
             segSize = (seg_label.shape[0], seg_label.shape[1])
-            scores = torch.zeros(1, cfg.DATASET.num_class, segSize[0], segSize[1]).cuda()
+            scores = torch.zeros(1, configer.get('xiashi', 'num_classes'), segSize[0], segSize[1]).cuda()
             # scores = async_copy_to(scores, gpu)
 
             for index, img in enumerate(img_resized_list):
                 img = img.cuda()
                 # print(img.size())
 
-                if cfg.MODEL.arch == "hrnet_ocr_v1":
-                    # import pdb
-                    # pdb.set_trace()
-                    torch.cuda.synchronize()
-                    start = time.time()
-                    scores_tmp = model(img, batch_data['seg_label'])[0]  # <class 'tuple'> 2
-                    torch.cuda.synchronize()
-                    end = time.time()
-                    print("nospilt inference time:", end - start)
-                    exit()
-                    # import pdb
-                    # pdb.set_trace()
-
-                elif cfg.MODEL.arch == "hrnet_ocr.HRNet_Mscale":
-                    from config import cfg_nv as cfg_local
-                    if not cfg_local.MODEL.N_SCALES:
-                        inputs = {'images': img, 'gts': seg_label[index]}
-                        # output_dict = model(inputs)
-                        #
-                        # _pred = output_dict['pred']
-                        scores_tmp = model(inputs)
-                    else:
-                        inputs = {'images': img, 'gts': seg_label[index]}
-                        # output_dict = model(inputs)
-                        #
-                        # _pred = output_dict['pred']
-                        scores_tmp = model(inputs)
-                        print(type(scores_tmp), scores_tmp)
-
-                else:
-                    scores_tmp = model(img)
-
-
+                scores_tmp = model(img, is_eval=True)
 
                 scores_tmp = nn.functional.interpolate(
                     scores_tmp, size=segSize, mode='bilinear', align_corners=False)
 
                 scores_tmp = nn.functional.softmax(scores_tmp, dim=1)
-                scores = scores + scores_tmp / len(cfg.DATASET.imgSizes)
+                scores = scores + scores_tmp / len(configer.get('xiashi', 'imgSizes'))
             #             scores[:, -1, :, :] = 0  # ignore the last category
 
             # name = batch_data['info'].replace('/', '_').split('.')[0]
@@ -202,10 +171,10 @@ def evaluate(model, loader, epoch):
         time_meter.update(time.perf_counter() - tic)
 
         # calculate accuracy
-        class_list = range(cfg.DATASET.num_class)
+        class_list = range(configer.get('xiashi', 'num_classes'))
         #         print(class_list[-2:])
         acc, pix = accuracy(pred, seg_label, ignored_label=class_list[-2:])  # omit ignored label, people
-        intersection, union = intersectionAndUnion(pred, seg_label, cfg.DATASET.num_class)
+        intersection, union = intersectionAndUnion(pred, seg_label, configer.get('xiashi', 'num_classes'))
         # print(intersection, union)
         acc_meter.update(acc, pix)
         intersection_meter.update(intersection)
@@ -217,53 +186,53 @@ def evaluate(model, loader, epoch):
             union_meter_per_height[height].update(union)
 
         # logger.info()
-        # visualization
-        if cfg.VAL.visualize:
-            # print(os.path.join(cfg.DIR,
-            #                    '{}_val_result_valsize{}/{}/{}m'.format(cfg.DATASET.val_data_name,
-            #                                                            cfg.DATASET.imgValMaxSize, str(save_path),
-            #                                                            height)))
-            if not os.path.isdir(os.path.join(cfg.DIR,
-                                              '{}_val_result_valsize{}/{}/{}m'.format(cfg.DATASET.val_data_name,
-                                                                                      cfg.DATASET.imgValMaxSize,
-                                                                                      str(save_path), height))):
-                os.makedirs(os.path.join(cfg.DIR,
-                                         '{}_val_result_valsize{}/{}/{}m'.format(cfg.DATASET.val_data_name,
-                                                                                 cfg.DATASET.imgValMaxSize,
-                                                                                 str(save_path),
-                                                                                 height)))
-
-            visualize_result(
-                (batch_data['img_ori'], seg_label, batch_data['info']),
-                pred,
-                os.path.join(cfg.DIR,
-                             '{}_val_result_valsize{}/{}/{}m'.format(cfg.DATASET.val_data_name,
-                                                                     cfg.DATASET.imgValMaxSize, str(save_path),
-                                                                     height)),
-                colors
-            )
-
-        if cfg.VAL.save_labelfile:
-            if not os.path.isdir(
-                    os.path.join(cfg.DIR, '{}_pred_labelfile_valsize{}'.format(cfg.DATASET.val_data_name,
-                                                                               cfg.DATASET.imgValMaxSize),
-                                 str(save_path))):
-                os.makedirs(
-                    os.path.join(cfg.DIR, '{}_pred_labelfile_valsize{}'.format(cfg.DATASET.val_data_name,
-                                                                               cfg.DATASET.imgValMaxSize),
-                                 str(save_path)))
-
-            save_labelfile(
-                batch_data['info'],
-                pred,
-                os.path.join(cfg.DIR,
-                             '{}_pred_labelfile_valsize{}'.format(cfg.DATASET.val_data_name, cfg.DATASET.imgValMaxSize),
-                             str(save_path))
-            )
-
-        # pbar.update(1)
-        # pbar.close()
-        # summary
+        # # visualization
+        # if cfg.VAL.visualize:
+        #     # print(os.path.join(cfg.DIR,
+        #     #                    '{}_val_result_valsize{}/{}/{}m'.format(cfg.DATASET.val_data_name,
+        #     #                                                            cfg.DATASET.imgValMaxSize, str(save_path),
+        #     #                                                            height)))
+        #     if not os.path.isdir(os.path.join(cfg.DIR,
+        #                                       '{}_val_result_valsize{}/{}/{}m'.format(cfg.DATASET.val_data_name,
+        #                                                                               cfg.DATASET.imgValMaxSize,
+        #                                                                               str(save_path), height))):
+        #         os.makedirs(os.path.join(cfg.DIR,
+        #                                  '{}_val_result_valsize{}/{}/{}m'.format(cfg.DATASET.val_data_name,
+        #                                                                          cfg.DATASET.imgValMaxSize,
+        #                                                                          str(save_path),
+        #                                                                          height)))
+        #
+        #     visualize_result(
+        #         (batch_data['img_ori'], seg_label, batch_data['info']),
+        #         pred,
+        #         os.path.join(cfg.DIR,
+        #                      '{}_val_result_valsize{}/{}/{}m'.format(cfg.DATASET.val_data_name,
+        #                                                              cfg.DATASET.imgValMaxSize, str(save_path),
+        #                                                              height)),
+        #         colors
+        #     )
+        #
+        # if cfg.VAL.save_labelfile:
+        #     if not os.path.isdir(
+        #             os.path.join(cfg.DIR, '{}_pred_labelfile_valsize{}'.format(cfg.DATASET.val_data_name,
+        #                                                                        cfg.DATASET.imgValMaxSize),
+        #                          str(save_path))):
+        #         os.makedirs(
+        #             os.path.join(cfg.DIR, '{}_pred_labelfile_valsize{}'.format(cfg.DATASET.val_data_name,
+        #                                                                        cfg.DATASET.imgValMaxSize),
+        #                          str(save_path)))
+        #
+        #     save_labelfile(
+        #         batch_data['info'],
+        #         pred,
+        #         os.path.join(cfg.DIR,
+        #                      '{}_pred_labelfile_valsize{}'.format(cfg.DATASET.val_data_name, cfg.DATASET.imgValMaxSize),
+        #                      str(save_path))
+        #     )
+        #
+        # # pbar.update(1)
+        # # pbar.close()
+        # # summary
 
         iou = intersection_meter.sum / (union_meter.sum + 1e-10)
         all_time_meter.update(time.perf_counter() - tic)
@@ -307,7 +276,7 @@ def evaluate(model, loader, epoch):
         save_dict[h]["num"] = num_per_height[h]
         save_dict[h]["pixel_count"] = acc_meter_per_height[h].count
 
-    path_name = os.path.join(cfg.DIR, 'dist_result_size{}'.format(cfg.DATASET.imgValMaxSize), str(save_path))
+    path_name = os.path.join(configer.get('xiashi', 'DIR'), 'dist_result_size{}'.format(configer.get('xiashi', 'imgValMaxSize')), str(save_path))
     if not os.path.isdir(path_name):
         os.makedirs(path_name)
     with open(os.path.join(path_name, 'dist_rank{}.pkl'.format(dist.get_rank())), 'wb') as f:
@@ -320,7 +289,7 @@ def evaluate(model, loader, epoch):
     inference_mean.append(time_meter.average())
 
 
-def evaluate_input_split(model, loader, epoch):
+def evaluate_input_split(model, loader, epoch, configer, logger):
     acc_meter = AverageMeter()
     intersection_meter = AverageMeter()
     union_meter = AverageMeter()
@@ -353,7 +322,7 @@ def evaluate_input_split(model, loader, epoch):
     num_per_height = defaultdict(int)
 
     # colors, class_names = parse_csv(cfg)
-    colors, class_names = parse_csv_merged(cfg)
+    colors, class_names = parse_csv_merged(configer)
 
     model.eval()
     save_path = epoch
@@ -399,7 +368,7 @@ def evaluate_input_split(model, loader, epoch):
                 up_h = img_split_coord[0] * split_height
                 left_w = img_split_coord[1] * split_width
 
-                scores = torch.zeros(1, cfg.DATASET.num_class, split_height, split_width).cuda()
+                scores = torch.zeros(1, configer.get('xiashi', 'num_classes'), split_height, split_width).cuda()
                 # img_split_ori = batch_data['img_ori'][split_id]
                 img_resized_list = img_resized_split_list[split_id]
 
@@ -409,28 +378,12 @@ def evaluate_input_split(model, loader, epoch):
                     img = img.cuda()
                     # print(img.size())
 
-                    if cfg.MODEL.arch == "hrnet_ocr_v1":
-                        # import pdb; pdb.set_trace()
-                        if cfg.MODEL.use_teacher:
-                            scores_tmp = model(img, batch_data['seg_label'], True, up_h, up_h + split_height, left_w, left_w + split_width)[0]
-                        else:
-
-                            scores_tmp = model(img, batch_data['seg_label'])[0]  # <class 'tuple'> 2
-                            # <class 'tuple'> 2
-
-                    elif cfg.MODEL.arch == "hrnet_ocr.HRNet_Mscale":
-                        inputs = {'images': img, 'gts': seg_label}
-                        scores_tmp = model(inputs)
-
-                    else:
-                        scores_tmp = model(img)
-
-                    # print(type(scores_tmp), scores_tmp.size())
+                    scores_tmp = model(img, is_eval=True)
 
                     scores_tmp = nn.functional.interpolate(
                         scores_tmp, size=(split_height, split_width), mode='bilinear', align_corners=False)
                     scores_tmp = nn.functional.softmax(scores_tmp, dim=1)
-                    scores = scores + scores_tmp / len(cfg.DATASET.imgSizes)
+                    scores = scores + scores_tmp / len(configer.get('xiashi', 'imgSizes'))
                 #                 scores[:, -1, :, :] = 0  # ignore the last category
 
                 torch.cuda.synchronize()
@@ -448,10 +401,10 @@ def evaluate_input_split(model, loader, epoch):
 
         # calculate accuracy
         # print(pred.shape, seg_label.shape)
-        class_list = range(cfg.DATASET.num_class)
+        class_list = range(configer.get('xiashi', 'num_classes'))
         #         print(class_list[-2:])
         acc, pix = accuracy(pred, seg_label, ignored_label=class_list[-2:])
-        intersection, union = intersectionAndUnion(pred, seg_label, cfg.DATASET.num_class)
+        intersection, union = intersectionAndUnion(pred, seg_label, configer.get('xiashi', 'num_classes'))
         # print(intersection, union)
         acc_meter.update(acc, pix)
         intersection_meter.update(intersection)
@@ -464,47 +417,47 @@ def evaluate_input_split(model, loader, epoch):
 
         # logger.info()
         # visualization
-        if cfg.VAL.visualize:
-            if not os.path.isdir(os.path.join(cfg.DIR,
-                                              '{}_split_valresult_valsize{}/{}/{}m'.format(cfg.DATASET.val_data_name,
-                                                                                           cfg.DATASET.imgValMaxSize,
-                                                                                           str(save_path),
-                                                                                           height))):
-                os.makedirs(os.path.join(cfg.DIR,
-                                         '{}_split_valresult_valsize{}/{}/{}m'.format(cfg.DATASET.val_data_name,
-                                                                                      cfg.DATASET.imgValMaxSize,
-                                                                                      str(save_path), height)))
-
-            visualize_result(
-                (batch_data['img_ori'], seg_label, batch_data['info']),
-                pred,
-                os.path.join(cfg.DIR,
-                             '{}_split_valresult_valsize{}/{}/{}m'.format(cfg.DATASET.val_data_name,
-                                                                          cfg.DATASET.imgValMaxSize,
-                                                                          str(save_path), height)),
-                colors
-            )
-
-        if cfg.VAL.save_labelfile:
-            if not os.path.isdir(os.path.join(cfg.DIR,
-                                              '{}_split_pred_labelfile_valsize{}'.format(cfg.DATASET.val_data_name,
-                                                                                         cfg.DATASET.imgValMaxSize),
-                                              str(save_path))):
-                os.makedirs(os.path.join(cfg.DIR, '{}_split_pred_labelfile_valsize{}'.format(cfg.DATASET.val_data_name,
-                                                                                             cfg.DATASET.imgValMaxSize),
-                                         str(save_path)))
-
-            save_labelfile(
-                batch_data['info'],
-                pred,
-                os.path.join(cfg.DIR, '{}_split_pred_labelfile_valsize{}'.format(cfg.DATASET.val_data_name,
-                                                                                 cfg.DATASET.imgValMaxSize),
-                             str(save_path))
-            )
-
-        # pbar.update(1)
-        # pbar.close()
-        # summary
+        # if cfg.VAL.visualize:
+        #     if not os.path.isdir(os.path.join(cfg.DIR,
+        #                                       '{}_split_valresult_valsize{}/{}/{}m'.format(cfg.DATASET.val_data_name,
+        #                                                                                    cfg.DATASET.imgValMaxSize,
+        #                                                                                    str(save_path),
+        #                                                                                    height))):
+        #         os.makedirs(os.path.join(cfg.DIR,
+        #                                  '{}_split_valresult_valsize{}/{}/{}m'.format(cfg.DATASET.val_data_name,
+        #                                                                               cfg.DATASET.imgValMaxSize,
+        #                                                                               str(save_path), height)))
+        #
+        #     visualize_result(
+        #         (batch_data['img_ori'], seg_label, batch_data['info']),
+        #         pred,
+        #         os.path.join(cfg.DIR,
+        #                      '{}_split_valresult_valsize{}/{}/{}m'.format(cfg.DATASET.val_data_name,
+        #                                                                   cfg.DATASET.imgValMaxSize,
+        #                                                                   str(save_path), height)),
+        #         colors
+        #     )
+        #
+        # if cfg.VAL.save_labelfile:
+        #     if not os.path.isdir(os.path.join(cfg.DIR,
+        #                                       '{}_split_pred_labelfile_valsize{}'.format(cfg.DATASET.val_data_name,
+        #                                                                                  cfg.DATASET.imgValMaxSize),
+        #                                       str(save_path))):
+        #         os.makedirs(os.path.join(cfg.DIR, '{}_split_pred_labelfile_valsize{}'.format(cfg.DATASET.val_data_name,
+        #                                                                                      cfg.DATASET.imgValMaxSize),
+        #                                  str(save_path)))
+        #
+        #     save_labelfile(
+        #         batch_data['info'],
+        #         pred,
+        #         os.path.join(cfg.DIR, '{}_split_pred_labelfile_valsize{}'.format(cfg.DATASET.val_data_name,
+        #                                                                          cfg.DATASET.imgValMaxSize),
+        #                      str(save_path))
+        #     )
+        #
+        # # pbar.update(1)
+        # # pbar.close()
+        # # summary
 
         iou = intersection_meter.sum / (union_meter.sum + 1e-10)
 
@@ -547,7 +500,7 @@ def evaluate_input_split(model, loader, epoch):
         save_dict[h]["num"] = num_per_height[h]
         save_dict[h]["pixel_count"] = acc_meter_per_height[h].count
 
-    path_name = os.path.join(cfg.DIR, 'dist_split_result_size{}'.format(cfg.DATASET.imgValMaxSize), str(save_path))
+    path_name = os.path.join(configer.get('xiashi', 'DIR'), 'dist_split_result_size{}'.format(configer.get('xiashi', 'imgValMaxSize')), str(save_path))
     if not os.path.isdir(path_name):
         os.makedirs(path_name)
     with open(os.path.join(path_name, 'dist_rank{}.pkl'.format(dist.get_rank())), 'wb') as f:
@@ -561,7 +514,7 @@ def evaluate_input_split(model, loader, epoch):
 
 
 
-def main(epoch, model, configer, use_split=False):
+def main(epoch, model, configer, logger, use_split=False):
     # Dataset and Loader
     import torch.distributed as dist
     gpu_nums = len(configer.get('gpu'))
@@ -573,7 +526,7 @@ def main(epoch, model, configer, use_split=False):
             configer.get('xiashi', 'list_val'),
             configer,
             configer.get('xiashi', 'crop_type'),
-            cfg.VAL.val_height,
+            configer.get('xiashi', 'val_height'),
             world_size=gpu_nums, rank=dist.get_rank())
 
     else:
@@ -606,10 +559,10 @@ def main(epoch, model, configer, use_split=False):
         )
 
     # Main loop
-    if cfg.VAL.use_split:
-        evaluate_input_split(model, loader_val, epoch)
+    if use_split:
+        evaluate_input_split(model, loader_val, epoch, configer, logger)
     else:
-        evaluate(model, loader_val, epoch)
+        evaluate(model, loader_val, epoch, configer, logger)
     # evaluate(model, loader_val, cfg, gpu, save_path)
 
     logger.info('Evaluation Done!')
@@ -617,141 +570,48 @@ def main(epoch, model, configer, use_split=False):
 
 
 
-def val_xiashidata(model, use_split=False, configer):
+def val_xiashidata(model, configer, use_split=False):
     import torch.multiprocessing as mp
     import cv2
     cv2.setNumThreads(0)
     cv2.ocl.setUseOpenCL(False)
-
-    args = parse_args()
-    assert_and_infer_cfg(args)
-    cfg_from_file(args.cfg, args)
-
-    # # Parse gpu ids
-    gpus = parse_devices(args.gpus)
-    gpus = [x.replace('gpu', '') for x in gpus]
-    gpus = [int(x) for x in gpus]
-    num_gpus = len(gpus)
-    rank2gpu = {i: gpus[i] for i in range(num_gpus)}
-
-    if not args.local_rank == -1:
-        torch.cuda.set_device(args.local_rank)
-        dist.init_process_group(backend='nccl',
-                                init_method='tcp://127.0.0.1:{}'.format(args.port),
-                                world_size=num_gpus,
-                                rank=args.local_rank
-                                )
-
-    epochs = parseIntSet(cfg.VAL.multi_checkpoints)
-    epochs = [sorted(epochs)[-1]]
-    import datetime
+    global DIR
+    DIR = configer.get('xiashi', 'DIR')
 
     ISOTIMEFORMAT = '%Y-%m-%d-%H:%M:%S'
-    if cfg.TRAIN.data_crop:
-        cfg.DIR = './'
-        # cfg.DIR = '{}/{}_{}_{}/{}_{}_class{}_size{}'.format(args.ckpt_path,cfg.DATASET.train_data_name,cfg.DATASET.crop_type, cfg.MODEL.arch,
-        #                                                            cfg.MODEL.arch_encoder,
-        #                                                            cfg.MODEL.arch_decoder, cfg.DATASET.num_class,
-        #                                                            cfg.DATASET.imgMaxSize)
+    if configer.get('xiashi', 'data_crop')=="True":
+        DIR = './'
+
     else:
-        cfg.DIR = './'
-        # cfg.DIR = '{}/{}_{}/{}_{}_class{}_size{}'.format(args.ckpt_path, cfg.DATASET.train_data_name,
-        #                                                  cfg.MODEL.arch,
-        #                                                  cfg.MODEL.arch_encoder,
-        #                                                  cfg.MODEL.arch_decoder, cfg.DATASET.num_class,
-        #                                                  cfg.DATASET.imgMaxSize)
-    if "ocr" in cfg.MODEL.arch and cfg.OCR.if_object_mask:
-        cfg.DIR = cfg.DIR + '_objectmask'
-    if cfg.TRAIN.use_ohem:
-        cfg.DIR = cfg.DIR + '_ohem'
-    if cfg.TRAIN.se_loss:
-        cfg.DIR = cfg.DIR + '_se'
-    if cfg.TRAIN.metric_loss:
-        cfg.DIR = cfg.DIR + '_metric'
+        DIR = './'
 
-    if len(cfg.VAL.checkpoint) == 0:
-        # datetime.datetime.now().strftime(ISOTIMEFORMAT)
-        if cfg.VAL.use_split:
-            log_filename = '{}'.format(cfg.DATASET.val_data_name) + '_valsize{}'.format(cfg.DATASET.imgValMaxSize) + \
-                           '_dist_val_split_' + 'epoch{}_{}'.format(epochs[0], epochs[-1]) + '.txt'
-        else:
-            log_filename = '{}'.format(cfg.DATASET.val_data_name) + '_valsize{}'.format(cfg.DATASET.imgValMaxSize) + \
-                           '_dist_val_' + 'epoch{}_{}'.format(epochs[0], epochs[-1]) + '.txt'
-        logger = setup_logger(name='Logger', distributed_rank=dist.get_rank(), save_dir=cfg.DIR,
-                              filename=log_filename,
-                              mode='w')
-        logger.info("Saving log to {}/{}".format(cfg.DIR, log_filename))
-        logger.info("Loaded configuration file {}".format(args.cfg))
-        logger.info("Running with config:\n{}".format(cfg))
+    # if "ocr" in cfg.MODEL.arch and cfg.OCR.if_object_mask:
+    #     cfg.DIR = cfg.DIR + '_objectmask'
+    # if cfg.TRAIN.use_ohem:
+    #     cfg.DIR = cfg.DIR + '_ohem'
+    # if cfg.TRAIN.se_loss:
+    #     cfg.DIR = cfg.DIR + '_se'
+    # if cfg.TRAIN.metric_loss:
+    #     cfg.DIR = cfg.DIR + '_metric'
+    epoch = configer.get('epoch')
 
-        for epoch in epochs:
-            cfg.MODEL.weights = os.path.join(
-                cfg.DIR, '{}_epoch_{}.pth'.format(cfg.MODEL.arch, str(epoch)))
-
-            logger.info("load weights path: {}".format(cfg.MODEL.weights))
-
-            assert os.path.exists(cfg.MODEL.weights), "checkpoint does not exist!"
-
-            if not os.path.isdir(os.path.join(cfg.DIR)):
-                os.makedirs(os.path.join(cfg.DIR))
-
-            main(epoch, model, configer, use_split=use_split)
-
-        logger.info(
-            "######################################### validation summary #########################################")
-        if cfg.VAL.use_split:
-            for i, epoch in enumerate(epochs):
-                logger.info(
-                    'Split val results for Ckpt_{}, Mean IOU (except_ignore & people): {:.4f}, Mean IoU: {:.4f}, Accuracy: {:.2f}%, Inference Time: {:.4f}s'
-                        .format(epoch, iou_mean_except_ignore[i], iou_mean[i], acc_mean[i], inference_mean[i]))
-        else:
-            for i, epoch in enumerate(epochs):
-                logger.info(
-                    'Ckpt_{}, Mean IOU (except_ignore & people): {:.4f}, Mean IoU: {:.4f}, Accuracy: {:.2f}%, Inference Time: {:.4f}s'
-                        .format(epoch, iou_mean_except_ignore[i], iou_mean[i], acc_mean[i], inference_mean[i]))
+    if use_split:
+        log_filename = '{}'.format("xiashi") + '_valsize{}'.format(configer.get('xiashi', 'imgValMaxSize')) + \
+                       '_dist_val_split_' + 'epoch{}'.format(epoch) + '.txt'
     else:
-        # datetime.datetime.now().strftime(ISOTIMEFORMAT)
-        checkpoint_name = os.path.basename(cfg.VAL.checkpoint).replace('.pth', '')
-        cfg.DIR = 'val_results/{}'.format(checkpoint_name)
-        if "ocr" in cfg.MODEL.arch and cfg.OCR.if_object_mask:
-            cfg.DIR = cfg.DIR + '_objectmask'
-        if cfg.TRAIN.use_ohem:
-            cfg.DIR = cfg.DIR + '_ohem'
-        if cfg.TRAIN.se_loss:
-            cfg.DIR = cfg.DIR + '_se'
-        if cfg.TRAIN.metric_loss:
-            cfg.DIR = cfg.DIR + '_metric'
+        log_filename = '{}'.format("xiashi") + '_valsize{}'.format(configer.get('xiashi', 'imgValMaxSize')) + \
+                       '_dist_val_' + 'epoch{}'.format(epoch) + '.txt'
 
-        if cfg.VAL.use_split:
-            log_filename = '{}'.format(cfg.DATASET.val_data_name) + '_valsize{}'.format(cfg.DATASET.imgValMaxSize) + \
-                           '_dist_val_split' + '.txt'
-        else:
-            log_filename = '{}'.format(cfg.DATASET.val_data_name) + '_valsize{}'.format(cfg.DATASET.imgValMaxSize) + \
-                           '_dist_val' + '.txt'
-        logger = setup_logger(name='Logger', distributed_rank=dist.get_rank(), save_dir=cfg.DIR,
-                              filename=log_filename,
-                              mode='w')
-        logger.info("Saving log to {}/{}".format(cfg.DIR, log_filename))
-        logger.info("Loaded configuration file {}".format(args.cfg))
-        logger.info("Running with config:\n{}".format(cfg))
+    logger = setup_logger(name='Logger', distributed_rank=dist.get_rank(), save_dir=DIR,
+                          filename=log_filename,
+                          mode='w')
 
-        cfg.MODEL.weights = cfg.VAL.checkpoint
-        logger.info("load weights path: {}".format(cfg.MODEL.weights))
-        assert os.path.exists(cfg.MODEL.weights), "checkpoint does not exist!"
+    main(epoch, model, configer, logger, use_split=use_split)
 
-        if not os.path.isdir(os.path.join(cfg.DIR)):
-            os.makedirs(os.path.join(cfg.DIR))
-        main(os.path.basename(cfg.VAL.checkpoint).replace('.pth', ''))
 
-        logger.info(
-            "######################################### validation summary #########################################")
-        if cfg.VAL.use_split:
-            logger.info(
-                'Split val results for saved weights: Mean IOU (except_ignore & people): {:.4f}, Mean IoU: {:.4f}, Accuracy: {:.2f}%, Inference Time: {:.4f}s'
-                    .format(iou_mean_except_ignore[0], iou_mean[0], acc_mean[0], inference_mean[0]))
-        else:
-            logger.info(
-                'saved weights: Mean IOU (except_ignore & people): {:.4f}, Mean IoU: {:.4f}, Accuracy: {:.2f}%, Inference Time: {:.4f}s'
+    logger.info("######################################### validation summary #########################################")
+
+    logger.info('saved weights: Mean IOU (except_ignore & people): {:.4f}, Mean IoU: {:.4f}, Accuracy: {:.2f}%, Inference Time: {:.4f}s'
                     .format(iou_mean_except_ignore[0], iou_mean[0], acc_mean[0], inference_mean[0]))
 
-        logger.info("Saving log to {}/{}".format(cfg.DIR, log_filename))
+    logger.info("Saving log to {}/{}".format(DIR, log_filename))
