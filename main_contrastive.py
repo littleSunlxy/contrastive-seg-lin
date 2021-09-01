@@ -64,7 +64,20 @@ if __name__ == "__main__":
     parser.add_argument('--val_batch_size', default=None, type=int,
                         dest='val:batch_size', help='The batch size of validation.')
     parser.add_argument('--use_xiashi_dataset',  action='store_true',
-                        dest='data:use_xiashi_dataset', help='The saving epoch of checkpoint model.')
+                        dest='data:use_xiashi_dataset', help='The usage of xiashi data.')
+
+    # ***********  Params for xiashidata.  **********
+    parser.add_argument('--root_dataset', default='', type=str,
+                        dest='xiashi:root_dataset', help='The root path of xiashi data.')
+    parser.add_argument('--list_train', default='/workdir/hrr/data/xiashi_data/segdata_6/mergev1.4/train_1-6_mergev1.4.odg', type=str,
+                        dest='xiashi:list_train', help='The training csv list.')
+    parser.add_argument('--list_val', default='/workdir/hrr/data/xiashi_data/segdata_6/mergev1.4/test_1-6_mergev1.4.odgt', type=str,
+                        dest='xiashi:list_val', help='The valing csv list.')
+    parser.add_argument('--crop_type', default='crop_A', type=str,
+                        dest='xiashi:crop_type', help='The crop type of xiashi data.')
+    parser.add_argument('--workers', default=8, type=int,
+                        dest='xiashi:workers', help='The crop type of xiashi data.')
+
 
     # ***********  Params for checkpoint.  **********
     parser.add_argument('--checkpoints_root', default=None, type=str,
