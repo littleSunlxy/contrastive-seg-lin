@@ -83,6 +83,10 @@ if __name__ == "__main__":
                         dest='xiashi:imgValSizes', help='The evaluating img size of xiashi data.')
     parser.add_argument('--imgValMaxSize', default=1500, type=int,
                         dest='xiashi:imgValMaxSize', help='The evaluating img max size of xiashi data.')
+    parser.add_argument('--imgTestSizes', default='(300, 375, 450, 525, 600)', type=str,
+                        dest='xiashi:imgTestSizes', help=' multiscale train/test, size of short edge (int or tuple).')
+    parser.add_argument('--imgTestMaxSize', default=1000, type=int,
+                        dest='xiashi:imgTestMaxSize', help='maximum input image size of long edge.')
     parser.add_argument('--padding_constant', default=8, type=int,
                         dest='xiashi:padding_constant', help='The padding value of xiashi data.')
 
