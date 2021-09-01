@@ -133,9 +133,9 @@ def evaluate(model, loader, epoch, configer, logger):
         #     break
         batch_data = batch_data[0]
         seg_label = as_numpy(batch_data['seg_label'][0])
-        if cfg.TRAIN.use_reweight == 3:
-            mask = (seg_label != 11) * (seg_label != 12) * (seg_label != 13) * (seg_label != -1)
-            seg_label[mask] = 0
+        # if cfg.TRAIN.use_reweight == 3:
+        #     mask = (seg_label != 11) * (seg_label != 12) * (seg_label != 13) * (seg_label != -1)
+        #     seg_label[mask] = 0
         #             print(seg_label)
         img_resized_list = batch_data['img_data']
 
