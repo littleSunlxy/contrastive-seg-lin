@@ -69,7 +69,7 @@ if __name__ == "__main__":
     # ***********  Params for xiashidata.  **********
     parser.add_argument('--root_dataset', default='', type=str,
                         dest='xiashi:root_dataset', help='The root path of xiashi data.')
-    parser.add_argument('--list_train', default='/workdir/hrr/data/xiashi_data/segdata_6/mergev1.4/train_1-6_mergev1.4.odg', type=str,
+    parser.add_argument('--list_train', default='/workdir/hrr/data/xiashi_data/segdata_6/mergev1.4/train_1-6_mergev1.4.odgt', type=str,
                         dest='xiashi:list_train', help='The training csv list.')
     parser.add_argument('--list_val', default='/workdir/hrr/data/xiashi_data/segdata_6/mergev1.4/test_1-6_mergev1.4.odgt', type=str,
                         dest='xiashi:list_val', help='The valing csv list.')

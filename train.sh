@@ -8,7 +8,7 @@ SAVE_DIR="${SCRATCH_ROOT}/cityscapes_seg_results/"
 
 BACKBONE="hrnet48"
 
-CONFIGS="configs/cityscapes/H_48_D_4.json"
+CONFIGS="configs/meituan_xiashi/H_48_D_4.json"
 MODEL_NAME="hrnet_w48_ocr_contrast"
 LOSS_TYPE="contrast_auxce_loss"
 
