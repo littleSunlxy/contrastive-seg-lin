@@ -157,7 +157,7 @@ def evaluate(model, loader, epoch, configer, logger):
 
         with torch.no_grad():
             segSize = (seg_label.shape[0], seg_label.shape[1])
-            scores = torch.zeros(1, configer.get('xiashi', 'num_classes'), segSize[0], segSize[1]).cuda()
+            scores = torch.zeros(1, configer.get('data', 'num_classes'), segSize[0], segSize[1]).cuda()
             # scores = async_copy_to(scores, gpu)
 
             for index, img in enumerate(img_resized_list):
@@ -186,10 +186,10 @@ def evaluate(model, loader, epoch, configer, logger):
         time_meter.update(time.perf_counter() - tic)
 
         # calculate accuracy
-        class_list = range(configer.get('xiashi', 'num_classes'))
+        class_list = range(configer.get('data', 'num_classes'))
         #         print(class_list[-2:])
         acc, pix = accuracy(pred, seg_label, ignored_label=class_list[-2:])  # omit ignored label, people
-        intersection, union = intersectionAndUnion(pred, seg_label, configer.get('xiashi', 'num_classes'))
+        intersection, union = intersectionAndUnion(pred, seg_label, configer.get('data', 'num_classes'))
         # print(intersection, union)
         acc_meter.update(acc, pix)
         intersection_meter.update(intersection)
@@ -383,7 +383,7 @@ def evaluate_input_split(model, loader, epoch, configer, logger):
                 up_h = img_split_coord[0] * split_height
                 left_w = img_split_coord[1] * split_width
 
-                scores = torch.zeros(1, configer.get('xiashi', 'num_classes'), split_height, split_width).cuda()
+                scores = torch.zeros(1, configer.get('data', 'num_classes'), split_height, split_width).cuda()
                 # img_split_ori = batch_data['img_ori'][split_id]
                 img_resized_list = img_resized_split_list[split_id]
 
