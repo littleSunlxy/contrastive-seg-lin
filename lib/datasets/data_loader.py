@@ -109,7 +109,7 @@ class DataLoader(object):
                 world_size=gpu_nums, rank=dist.get_rank())
 
             trainloader = torch.utils.data.DataLoader(dataset_train, batch_size=1,
-                                                       num_workers=self.configer.get('xiashi', 'workers') // gpu_nums,
+                                                       num_workers=self.configer.get('data', 'workers') // gpu_nums,
                                                        collate_fn=user_collate_fn,
                                                        pin_memory=True,
                                                        drop_last=True,
@@ -185,7 +185,7 @@ class DataLoader(object):
                 batch_size=batch_size,
                 shuffle=False,
                 collate_fn=user_scattered_collate,
-                num_workers=self.configer.get('xiashi', 'workers') // gpu_nums,
+                num_workers=self.configer.get('data', 'workers') // gpu_nums,
                 drop_last=True)
 
         else:
