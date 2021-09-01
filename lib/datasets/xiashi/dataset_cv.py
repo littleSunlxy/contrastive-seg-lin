@@ -588,8 +588,7 @@ class TrainDataset_cv(BaseDataset_cv):
         for i in range(self.batch_per_gpu):
             img_height, img_width = batch_records[i]['height'], batch_records[i]['width']
             this_scale = min(
-                this_short_size / min(img_height, img_width), \
-                self.imgMaxSize / max(img_height, img_width))
+                this_short_size / min(img_height, img_width), self.imgMaxSize / max(img_height, img_width))
             batch_widths[i] = img_width * this_scale
             batch_heights[i] = img_height * this_scale
 
