@@ -98,7 +98,7 @@ class DataLoader(object):
         if self.configer.get('data', 'use_xiashi_dataset'):
             import torch.distributed as dist
             gpu_nums = len(self.configer.get('gpu'))
-            b_per_gpu = self.configer.get('train', 'batch_size')/gpu_nums
+            b_per_gpu = self.configer.get('train', 'batch_size')//gpu_nums
 
             dataset_train = TrainDataset_cv(
                 self.configer.get('xiashi', 'root_dataset'),
