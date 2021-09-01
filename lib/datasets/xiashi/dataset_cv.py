@@ -648,7 +648,7 @@ class TrainDataset_cv(BaseDataset_cv):
             batch_segms[i][:segm.shape[0], :segm.shape[1]] = segm
 
         output = dict()
-        output['img_data'] = batch_images
+        output['img'] = batch_images
         output['seg_label'] = batch_segms
         return output
 
