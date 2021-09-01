@@ -15,9 +15,9 @@
       "crop_type": "crop_A",
       "imgSizes": 1000,
       "imgMaxSize": 1500,
-      "imgValSizes": "(1000,)",
+      "imgValSizes": 1000,
       "imgValMaxSize": 1500,
-      "imgTestSizes": "(300, 375, 450, 525, 600)",
+      "imgTestSizes": [300, 375, 450, 525, 600],
       "imgTestMaxSize": 1000,
       "padding_constant": 8
     },

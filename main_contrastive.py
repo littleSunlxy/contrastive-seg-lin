@@ -67,28 +67,28 @@ if __name__ == "__main__":
                         dest='data:use_xiashi_dataset', help='The usage of xiashi data.')
 
     # ***********  Params for xiashidata.  **********
-    parser.add_argument('--root_dataset', default='', type=str,
-                        dest='xiashi:root_dataset', help='The root path of xiashi data.')
-    parser.add_argument('--list_train', default='/workdir/hrr/data/xiashi_data/segdata_6/mergev1.4/train_1-6_mergev1.4.odgt', type=str,
-                        dest='xiashi:list_train', help='The training csv list.')
-    parser.add_argument('--list_val', default='/workdir/hrr/data/xiashi_data/segdata_6/mergev1.4/test_1-6_mergev1.4.odgt', type=str,
-                        dest='xiashi:list_val', help='The valing csv list.')
-    parser.add_argument('--crop_type', default='crop_A', type=str,
-                        dest='xiashi:crop_type', help='The crop type of xiashi data.')
-    parser.add_argument('--imgSizes', default=1000, type=int,
-                        dest='xiashi:imgSizes', help='The training img size of xiashi data.')
-    parser.add_argument('--imgMaxSize', default=1500, type=int,
-                        dest='xiashi:imgMaxSize', help='The training img max size of xiashi data.')
-    parser.add_argument('--imgValSizes', default='(1000,)', type=str,
-                        dest='xiashi:imgValSizes', help='The evaluating img size of xiashi data.')
-    parser.add_argument('--imgValMaxSize', default=1500, type=int,
-                        dest='xiashi:imgValMaxSize', help='The evaluating img max size of xiashi data.')
-    parser.add_argument('--imgTestSizes', default='(300, 375, 450, 525, 600)', type=str,
-                        dest='xiashi:imgTestSizes', help=' multiscale train/test, size of short edge (int or tuple).')
-    parser.add_argument('--imgTestMaxSize', default=1000, type=int,
-                        dest='xiashi:imgTestMaxSize', help='maximum input image size of long edge.')
-    parser.add_argument('--padding_constant', default=8, type=int,
-                        dest='xiashi:padding_constant', help='The padding value of xiashi data.')
+    # parser.add_argument('--root_dataset', default='', type=str,
+    #                     dest='xiashi:root_dataset', help='The root path of xiashi data.')
+    # parser.add_argument('--list_train', default='/workdir/hrr/data/xiashi_data/segdata_6/mergev1.4/train_1-6_mergev1.4.odgt', type=str,
+    #                     dest='xiashi:list_train', help='The training csv list.')
+    # parser.add_argument('--list_val', default='/workdir/hrr/data/xiashi_data/segdata_6/mergev1.4/test_1-6_mergev1.4.odgt', type=str,
+    #                     dest='xiashi:list_val', help='The valing csv list.')
+    # parser.add_argument('--crop_type', default='crop_A', type=str,
+    #                     dest='xiashi:crop_type', help='The crop type of xiashi data.')
+    # parser.add_argument('--imgSizes', default=1000, type=int,
+    #                     dest='xiashi:imgSizes', help='The training img size of xiashi data.')
+    # parser.add_argument('--imgMaxSize', default=1500, type=int,
+    #                     dest='xiashi:imgMaxSize', help='The training img max size of xiashi data.')
+    # parser.add_argument('--imgValSizes', default='(1000,)', type=str,
+    #                     dest='xiashi:imgValSizes', help='The evaluating img size of xiashi data.')
+    # parser.add_argument('--imgValMaxSize', default=1500, type=int,
+    #                     dest='xiashi:imgValMaxSize', help='The evaluating img max size of xiashi data.')
+    # parser.add_argument('--imgTestSizes', default='(300, 375, 450, 525, 600)', type=str,
+    #                     dest='xiashi:imgTestSizes', help=' multiscale train/test, size of short edge (int or tuple).')
+    # parser.add_argument('--imgTestMaxSize', default=1000, type=int,
+    #                     dest='xiashi:imgTestMaxSize', help='maximum input image size of long edge.')
+    # parser.add_argument('--padding_constant', default=8, type=int,
+    #                     dest='xiashi:padding_constant', help='The padding value of xiashi data.')
 
 
     # ***********  Params for checkpoint.  **********
