@@ -685,7 +685,7 @@ class ValDataset_cv(BaseDataset_cv):
 
 
         img_resized_list = []
-        this_short_size = self.imgValSizes:
+        this_short_size = self.imgValSizes
         # calculate target height and width
 
         scale = min(this_short_size / float(min(ori_height, ori_width)),  # ori:(3648, 4864)   scale:0.2741
