@@ -95,8 +95,6 @@ class DataLoader(object):
         return loader, sampler
 
     def get_trainloader(self):
-        import pdb;
-        pdb.set_trace()
         if self.configer.get('data', 'use_xiashi_dataset'):
             import torch.distributed as dist
             gpu_nums = len(self.configer.get('gpu'))
@@ -105,6 +103,7 @@ class DataLoader(object):
             dataset_train = TrainDataset_cv(
                 self.configer.get('xiashi', 'root_dataset'),
                 self.configer.get('xiashi', 'list_train'),
+                self.configer,
                 self.configer.get('xiashi', 'crop_type'),
                 batch_per_gpu=b_per_gpu,
                 world_size=gpu_nums, rank=dist.get_rank())
@@ -178,6 +177,7 @@ class DataLoader(object):
             dataset_val = ValDataset_cv(
                 self.configer.get('xiashi', 'root_dataset'),
                 self.configer.get('xiashi', 'list_val'),
+                self.configer,
                 world_size=gpu_nums, rank=dist.get_rank())
 
             valloader = torch.utils.data.DataLoader(

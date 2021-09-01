@@ -75,6 +75,16 @@ if __name__ == "__main__":
                         dest='xiashi:list_val', help='The valing csv list.')
     parser.add_argument('--crop_type', default='crop_A', type=str,
                         dest='xiashi:crop_type', help='The crop type of xiashi data.')
+    parser.add_argument('--imgSizes', default='(1000,)', type=str,
+                        dest='xiashi:imgSizes', help='The training img size of xiashi data.')
+    parser.add_argument('--imgMaxSize', default=1500, type=int,
+                        dest='xiashi:imgMaxSize', help='The training img max size of xiashi data.')
+    parser.add_argument('--imgValSizes', default='(1000,)', type=str,
+                        dest='xiashi:imgValSizes', help='The evaluating img size of xiashi data.')
+    parser.add_argument('--imgValMaxSize', default=1500, type=int,
+                        dest='xiashi:imgValMaxSize', help='The evaluating img max size of xiashi data.')
+    parser.add_argument('--padding_constant', default=8, type=int,
+                        dest='xiashi:padding_constant', help='The padding value of xiashi data.')
 
 
     # ***********  Params for checkpoint.  **********

@@ -42,19 +42,19 @@ def imresize(im, size, interp='bilinear'):
 
 
 class BaseDataset_cv(torch.utils.data.Dataset):
-    def __init__(self, odgt, opt, **kwargs):
+    def __init__(self, odgt, configer, **kwargs):
         # parse options
-        self.imgSizes = opt.imgSizes
-        self.imgMaxSize = opt.imgMaxSize
+        self.imgSizes = configer.get('xiashi', 'imgSizes')
+        self.imgMaxSize = configer.get('xiashi', 'imgMaxSize')
 
-        self.imgValSizes = opt.imgValSizes
-        self.imgValMaxSize = opt.imgValMaxSize
+        self.imgValSizes = configer.get('xiashi', 'imgValSizes')
+        self.imgValMaxSize = configer.get('xiashi', 'imgValMaxSize')
 
-        self.imgTestSizes = opt.imgTestSizes
-        self.imgTestMaxSize = opt.imgTestMaxSize
+        self.imgTestSizes = configer.get('xiashi', 'imgTestSizes')
+        self.imgTestMaxSize = configer.get('xiashi', 'imgTestMaxSize')
 
         # max down sampling rate of network to avoid rounding during conv or pooling
-        self.padding_constant = opt.padding_constant
+        self.padding_constant = configer.get('xiashi', 'padding_constant')
 
         # parse the input list
         self.parse_input_list(odgt, **kwargs)
@@ -119,8 +119,8 @@ class BaseDataset_cv(torch.utils.data.Dataset):
 
 
 class TrainDataset_cv(BaseDataset_cv):
-    def __init__(self, root_dataset, odgt, crop_type, batch_per_gpu=1, **kwargs):
-        super(TrainDataset_cv, self).__init__(odgt, **kwargs)
+    def __init__(self, root_dataset, odgt, configer, crop_type, batch_per_gpu=1, **kwargs):
+        super(TrainDataset_cv, self).__init__(odgt, configer, **kwargs)
         self.root_dataset = root_dataset
         # down sampling rate of segm label
         self.segm_downsampling_rate = 1
@@ -657,8 +657,8 @@ class TrainDataset_cv(BaseDataset_cv):
 
 
 class ValDataset_cv(BaseDataset_cv):
-    def __init__(self, root_dataset, odgt, **kwargs):
-        super(ValDataset_cv, self).__init__(odgt, **kwargs)
+    def __init__(self, root_dataset, odgt, configer, **kwargs):
+        super(ValDataset_cv, self).__init__(odgt, configer, **kwargs)
         self.root_dataset = root_dataset
         self.list_sample = self.list_sample[self.start_idx: self.end_idx]
 
