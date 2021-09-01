@@ -170,7 +170,10 @@ def evaluate(model, loader, epoch, configer, logger):
                     scores_tmp, size=segSize, mode='bilinear', align_corners=False)
 
                 scores_tmp = nn.functional.softmax(scores_tmp, dim=1)
-                scores = scores + scores_tmp / len(configer.get('xiashi', 'imgSizes'))
+                scores = scores + scores_tmp
+
+                # TODO:multi-scale inference:
+                # scores = scores + scores_tmp / len(configer.get('xiashi', 'imgSizes'))
             #             scores[:, -1, :, :] = 0  # ignore the last category
 
             # name = batch_data['info'].replace('/', '_').split('.')[0]
@@ -393,12 +396,13 @@ def evaluate_input_split(model, loader, epoch, configer, logger):
                     img = img.cuda()
                     # print(img.size())
 
-                    scores_tmp = model(img, is_eval=True)
+                    scores_tmp = model(img, is_eval=True)['seg']
 
                     scores_tmp = nn.functional.interpolate(
                         scores_tmp, size=(split_height, split_width), mode='bilinear', align_corners=False)
                     scores_tmp = nn.functional.softmax(scores_tmp, dim=1)
-                    scores = scores + scores_tmp / len(configer.get('xiashi', 'imgSizes'))
+                    scores = scores + scores_tmp
+                    # scores = scores + scores_tmp / len(configer.get('xiashi', 'imgSizes'))
                 #                 scores[:, -1, :, :] = 0  # ignore the last category
 
                 torch.cuda.synchronize()
