@@ -124,7 +124,7 @@ def evaluate(model, loader, epoch, configer, logger):
 
     model.eval()
     save_path = epoch
-    import pdb; pdb.set_trace()
+
     logger.info('[Epoch {} Eval Summary]:'.format(epoch))
     # pbar = tqdm(total=len(loader))
     tic = time.perf_counter()
@@ -345,6 +345,8 @@ def evaluate_input_split(model, loader, epoch, configer, logger):
 
     model.eval()
     save_path = epoch
+    import pdb;
+    pdb.set_trace()
     logger.info('[Epoch {} Eval Summary]:'.format(epoch))
     # pbar = tqdm(total=len(loader))
     tic = time.perf_counter()
