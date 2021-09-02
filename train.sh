@@ -23,26 +23,26 @@ BASE_LR=0.01
 
 # --gpu 0 1 2 3 4 5 6 7 \
 
-python -u main_contrastive.py --configs ${CONFIGS} \
-                       --drop_last y \
-                       --phase train \
-                       --gathered n \
-                       --loss_balance y \
-                       --log_to_file n \
-                       --backbone ${BACKBONE} \
-                       --model_name ${MODEL_NAME} \
-                       --gpu 4 \
-                       --use_xiashi_dataset \
-                       --data_dir ${DATA_DIR} \
-                       --loss_type ${LOSS_TYPE} \
-                       --max_iters ${MAX_ITERS} \
-                       --checkpoints_root ${CHECKPOINTS_ROOT} \
-                       --checkpoints_name ${CHECKPOINTS_NAME} \
-                       --pretrained ${PRETRAINED_MODEL} \
-                       --train_batch_size ${BATCH_SIZE} \
-                       --distributed \
-                       --base_lr ${BASE_LR} \
-                       2>&1 | tee ${LOG_FILE}
+#python -u main_contrastive.py --configs ${CONFIGS} \
+#                       --drop_last y \
+#                       --phase train \
+#                       --gathered n \
+#                       --loss_balance y \
+#                       --log_to_file n \
+#                       --backbone ${BACKBONE} \
+#                       --model_name ${MODEL_NAME} \
+#                       --gpu 4 \
+#                       --use_xiashi_dataset \
+#                       --data_dir ${DATA_DIR} \
+#                       --loss_type ${LOSS_TYPE} \
+#                       --max_iters ${MAX_ITERS} \
+#                       --checkpoints_root ${CHECKPOINTS_ROOT} \
+#                       --checkpoints_name ${CHECKPOINTS_NAME} \
+#                       --pretrained ${PRETRAINED_MODEL} \
+#                       --train_batch_size ${BATCH_SIZE} \
+#                       --distributed \
+#                       --base_lr ${BASE_LR} \
+#                       2>&1 | tee ${LOG_FILE}
 
 
 export CFG_1="configs/meituan_xiashi/mergev1.4_val_nosplit.yaml"
