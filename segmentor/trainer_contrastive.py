@@ -188,7 +188,7 @@ class Trainer(object):
         print("here!!!!!!!!!!")
         if hasattr(self.train_loader.sampler, 'set_epoch'):
             self.train_loader.sampler.set_epoch(self.configer.get('epoch'))
-
+        print("now!!!!!!!!!!")
         for i, data_dict in enumerate(self.train_loader):
             print("i")
             if self.configer.get('lr', 'metric') == 'iters':
