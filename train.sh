@@ -18,7 +18,7 @@ PRETRAINED_MODEL="${MODEL_ROOT}/hrnetv2_w48_imagenet_pretrained.pth"
 LOG_FILE="${SCRATCH_ROOT}/logs/Cityscapes/${CHECKPOINTS_NAME}.log"
 #MAX_ITERS=20000
 MAX_ITERS=40000
-BATCH_SIZE=8
+BATCH_SIZE=1
 BASE_LR=0.01
 
 # --gpu 0 1 2 3 4 5 6 7 \
