@@ -2,19 +2,17 @@
 import os
 import time
 import argparse
-
 import pickle
-
-cur_path = os.path.abspath(os.path.dirname(__file__))
 # Our libs
 import pandas as pd
 import numpy as np
 
+print (os.getcwd())
 from lib.datasets.xiashi.defaults import _C as cfg
-from lib.utils.utils import setup_logger, parseIntSet
 from collections import defaultdict
 
 import sys
+cur_path = os.path.abspath(os.path.dirname(__file__))
 sys.path.insert(0,os.path.join(cur_path, ".."))
 
 def parse_args():
@@ -56,6 +54,71 @@ def parse_csv_merged(cfg):
     colors = colors_csv.iloc[ind, 7: 10].values.astype(dtype=np.uint8)
     class_names = colors_csv.iloc[ind, 6].values
     return colors, class_names
+
+
+def setup_logger(name, distributed_rank, save_dir=None, filename="log.txt", mode='w'):
+    import logging
+    logger = logging.getLogger(name)
+    logger.setLevel(logging.DEBUG)
+    # don't log results for the non-master process
+    if distributed_rank > 0:
+        return logger
+    ch = logging.StreamHandler(stream=sys.stdout)
+    ch.setLevel(logging.DEBUG)
+    formatter = logging.Formatter("%(asctime)s %(name)s %(levelname)s: %(message)s")
+    ch.setFormatter(formatter)
+    logger.addHandler(ch)
+
+    if save_dir:
+        if not os.path.exists(save_dir):
+            os.makedirs(save_dir)
+        fh = logging.FileHandler(os.path.join(save_dir, filename), mode=mode)  # 'a+' for add, 'w' for overwrite
+        fh.setLevel(logging.DEBUG)
+        fh.setFormatter(formatter)
+        logger.addHandler(fh)
+
+    return logger
+
+
+
+def parseIntSet(nputstr=""):
+    """
+    https://stackoverflow.com/questions/712460/interpreting-number-ranges-in-python
+    :param nputstr:
+    :return:
+    """
+    selection = set()
+    invalid = set()
+    # tokens are comma seperated values
+    tokens = [x.strip() for x in nputstr.split(',')]
+    for i in tokens:
+        if len(i) > 0:
+            if i[:1] == "<":
+                i = "1-%s"%(i[1:])
+        try:
+            # typically tokens are plain old integers
+            selection.add(int(i))
+        except:
+            # if not, then it might be a range
+            try:
+                # token = [int(k.strip()) for k in i.split('-')]
+                token = [int(k.strip()) for k in i.split('~')]
+                if len(token) > 1:
+                    token.sort()
+                    # we have items seperated by a dash
+                    # try to build a valid range
+                    first = token[0]
+                    last = token[len(token)-1]
+                    for x in range(first, last+1):
+                        selection.add(x)
+            except:
+                # not an int and not a range...
+                invalid.add(i)
+    # Report invalid tokens before returning valid selection
+    if len(invalid) > 0:
+        print("Invalid set: " + str(invalid))
+    return list(selection)
+# end parseIntSet
 
 
 def load_results(epoch):
