@@ -28,18 +28,18 @@ DATASET:
 #   imgSizes: (800,)
 #   imgMaxSize: 1000
 
-#  imgSizes: (1000,)
-#  imgMaxSize: 1500
-  imgSizes: (2000,)
-  imgMaxSize: 2500
+  imgSizes: (1000,)
+  imgMaxSize: 1500
+#  imgSizes: (2000,)
+#  imgMaxSize: 2500
 
 
   # ---------------------- Val ---------------------------
-#  imgValSizes: (1000,)
-#  imgValMaxSize: 1500
+  imgValSizes: (1000,)
+  imgValMaxSize: 1500
 
-  imgValSizes: (2000,)
-  imgValMaxSize: 2500
+#  imgValSizes: (2000,)
+#  imgValMaxSize: 2500
 
   padding_constant: 8
   segm_downsampling_rate: 1
