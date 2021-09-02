@@ -123,8 +123,8 @@
     },
     "solver": {
       "display_iter": 20,
-      "test_interval": 40000,
-      "max_iters": 40000
+      "test_interval": 20000,
+      "max_iters": 20000
     },
     "optim": {
       "optim_method": "sgd",
