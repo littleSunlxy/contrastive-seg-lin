@@ -193,6 +193,7 @@ class Trainer(object):
             self.train_loader.sampler.set_epoch(self.configer.get('epoch'))
         # print(self.train_loader)
         for i, data_dict in enumerate(self.train_loader):
+            import pdb; pdb.set_trace()
             if self.configer.get('data', 'use_xiashi_dataset') and i % (3000//self.configer.get('train', 'batch_size')) == 0:
             # if self.configer.get('data', 'use_xiashi_dataset'):
             #     self.traindataset.shuffle(1)
