@@ -110,6 +110,7 @@ class DataLoader(object):
 
             trainloader = torch.utils.data.DataLoader(dataset_train, batch_size=1,
                                                        num_workers=self.configer.get('data', 'workers') // gpu_nums,
+                                                       shuffle=True,
                                                        collate_fn=user_collate_fn,
                                                        pin_memory=True,
                                                        drop_last=True,
