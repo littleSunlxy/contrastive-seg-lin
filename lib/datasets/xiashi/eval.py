@@ -422,10 +422,10 @@ def evaluate_input_split(model, loader, epoch, configer, logger):
 
         # calculate accuracy
         # print(pred.shape, seg_label.shape)
-        class_list = range(configer.get('xiashi', 'num_classes'))
+        class_list = range(configer.get('data', 'num_classes'))
         #         print(class_list[-2:])
         acc, pix = accuracy(pred, seg_label, ignored_label=class_list[-2:])
-        intersection, union = intersectionAndUnion(pred, seg_label, configer.get('xiashi', 'num_classes'))
+        intersection, union = intersectionAndUnion(pred, seg_label, configer.get('data', 'num_classes'))
         # print(intersection, union)
         acc_meter.update(acc, pix)
         intersection_meter.update(intersection)
