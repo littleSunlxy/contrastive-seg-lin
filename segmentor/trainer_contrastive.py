@@ -197,7 +197,7 @@ class Trainer(object):
             if self.configer.get('data', 'use_xiashi_dataset') and i % (3000//self.configer.get('train', 'batch_size')) == 0:
             # if self.configer.get('data', 'use_xiashi_dataset'):
             #     self.traindataset.shuffle(1)
-                self.traindataset.shuffle(i // (3000//self.configer.get('train', 'batch_size')))
+                self.traindataset.shuffle(i)
                 # print("over")
 
             if self.configer.get('lr', 'metric') == 'iters':
