@@ -9,7 +9,7 @@ import numpy as np
 
 import sys
 cur_path = os.path.abspath(os.path.dirname(__file__))
-sys.path.insert(0,os.path.join(cur_path, "../.."))
+sys.path.insert(0,os.path.join(cur_path, "../../.."))
 
 print (os.getcwd())
 from lib.datasets.xiashi.default import _C as cfg
