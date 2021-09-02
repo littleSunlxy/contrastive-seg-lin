@@ -174,9 +174,9 @@ def load_results_per_height(epoch, if_export, test_type):
         fp = open("./reduced_valid_info.log", "a+")
 
     if cfg.VAL.use_split:
-        path_name = os.path.join(cfg.DIR, 'dist_split_result_size{}'.format(cfg.DATASET.imgValMaxSize), str(epoch))
+        path_name = os.path.join("ckpt/", 'dist_split_result_size{}'.format(cfg.DATASET.imgValMaxSize), str(epoch))
     else:
-        path_name = os.path.join(cfg.DIR, 'dist_result_size{}'.format(cfg.DATASET.imgValMaxSize), str(epoch))
+        path_name = os.path.join("ckpt/", 'dist_result_size{}'.format(cfg.DATASET.imgValMaxSize), str(epoch))
 
     logger.info("reduce results for epoch {}".format(epoch))
     logger.info("open {}".format(path_name))

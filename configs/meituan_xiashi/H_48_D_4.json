@@ -10,7 +10,7 @@
     },
     "xiashi": {
       "root_dataset": "",
-      "DIR": "ckpt/ade20k-resnet50dilated-ppm_deepsup",
+      "DIR": "ckpt/",
       "list_train": "/workdir/hrr/data/xiashi_data/segdata_6/mergev1.4/train_1-6_mergev1.4.odgt",
       "csv_file": "/workdir/hrr/data/xiashi_data/class_dict_all_merged_20_v1.4.csv",
       "crop_type": "crop_A",
