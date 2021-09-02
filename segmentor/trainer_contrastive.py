@@ -190,7 +190,11 @@ class Trainer(object):
             self.train_loader.sampler.set_epoch(self.configer.get('epoch'))
         # print(self.train_loader)
         for i, data_dict in enumerate(self.train_loader):
-            # print("i")
+            # if self.configer.get('data', 'use_xiashi_dataset') and i % (3000//self.configer.get('train', 'batch_size')) == 0:
+            if self.configer.get('data', 'use_xiashi_dataset'):
+                self.train_loader.root_dataset.shuffle(i // (3000//self.configer.get('train', 'batch_size')))
+                print("over")
+
             if self.configer.get('lr', 'metric') == 'iters':
                 self.scheduler.step(self.configer.get('iters'))
             else:
