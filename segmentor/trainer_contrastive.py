@@ -63,7 +63,10 @@ class Trainer(object):
 
         self.optimizer, self.scheduler = self.optim_scheduler.init_optimizer(params_group)
 
-        self.train_loader = self.data_loader.get_trainloader()
+        if self.configer.get('data', 'use_xiashi_dataset'):
+            self.train_loader, self.traindataset = self.data_loader.get_trainloader()
+        else:
+            self.train_loader = self.data_loader.get_trainloader()
         self.val_loader = self.data_loader.get_valloader()
         self.pixel_loss = self.loss_manager.get_seg_loss()
         if is_distributed():
@@ -192,7 +195,8 @@ class Trainer(object):
         for i, data_dict in enumerate(self.train_loader):
             # if self.configer.get('data', 'use_xiashi_dataset') and i % (3000//self.configer.get('train', 'batch_size')) == 0:
             if self.configer.get('data', 'use_xiashi_dataset'):
-                self.train_loader.root_dataset.shuffle(i // (3000//self.configer.get('train', 'batch_size')))
+                self.traindataset.shuffle(1)
+                # self.traindataset.shuffle(i // (3000//self.configer.get('train', 'batch_size')))
                 print("over")
 
             if self.configer.get('lr', 'metric') == 'iters':

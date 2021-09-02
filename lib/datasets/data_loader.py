@@ -115,7 +115,7 @@ class DataLoader(object):
                                                        pin_memory=True,
                                                        drop_last=True,
                                                        )
-            print(trainloader.root_dataset)
+            return trainloader, dataset_train
         else:
             if self.configer.exists('data', 'use_edge') and self.configer.get('data', 'use_edge') == 'ce2p':
                 """
@@ -166,7 +166,7 @@ class DataLoader(object):
                     *args, trans_dict=self.configer.get('train', 'data_transformer')
                 )
             )
-        return trainloader
+            return trainloader
 
     def get_valloader(self, dataset=None):
         dataset = 'val' if dataset is None else dataset
