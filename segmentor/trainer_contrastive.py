@@ -181,7 +181,7 @@ class Trainer(object):
         self.seg_net.train()
         self.pixel_loss.train()
         start_time = time.time()
-        # import pdb; pdb.set_trace()
+        print("here!!!!!!!!!!")
         if "swa" in self.configer.get('lr', 'lr_policy'):
             normal_max_iters = int(self.configer.get('solver', 'max_iters') * 0.75)
             swa_step_max_iters = (self.configer.get('solver', 'max_iters') - normal_max_iters) // 5 + 1
