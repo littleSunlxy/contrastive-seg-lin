@@ -13,6 +13,8 @@ import albumentations as A
 import albumentations.augmentations.functional as F
 import json
 import time
+print (os.getcwd())
+exit()
 from lib.datasets.xiashi.utils import extract_height
 
 classnum = torch.zeros(4, 20)
