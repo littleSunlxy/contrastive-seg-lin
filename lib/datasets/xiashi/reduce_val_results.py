@@ -6,16 +6,16 @@ import argparse
 import pickle
 
 cur_path = os.path.abspath(os.path.dirname(__file__))
-import sys
-sys.path.insert(0,os.path.join(cur_path, ".."))
 # Our libs
 import pandas as pd
 import numpy as np
 
-from lib.datasets.xiashi.utils import extract_height
 from lib.datasets.xiashi.defaults import _C as cfg
 from lib.utils.utils import setup_logger, parseIntSet
 from collections import defaultdict
+
+import sys
+sys.path.insert(0,os.path.join(cur_path, ".."))
 
 def parse_args():
     parser = argparse.ArgumentParser(
