@@ -543,6 +543,7 @@ def main(epoch, model, configer, logger, use_split=False):
         dataset_val = ValDataset_Split_cv(
             configer.get('xiashi', 'root_dataset'),
             configer.get('xiashi', 'list_val'),
+            configer,
             configer.get('xiashi', 'crop_type'),
             configer.get('xiashi', 'val_height'),
             world_size=gpu_nums, rank=dist.get_rank())

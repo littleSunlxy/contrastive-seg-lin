@@ -736,8 +736,8 @@ class ValDataset_cv(BaseDataset_cv):
 
 
 class ValDataset_Split_cv(BaseDataset_cv):
-    def __init__(self, root_dataset, odgt, crop_type, val_height, **kwargs):
-        super(ValDataset_Split_cv, self).__init__(odgt, **kwargs)
+    def __init__(self, root_dataset, odgt, configer, crop_type, val_height, **kwargs):
+        super(ValDataset_Split_cv, self).__init__(odgt, configer, **kwargs)
         self.root_dataset = root_dataset
         # print(self.start_idx, self.end_idx)
         self.list_sample = self.list_sample[self.start_idx: self.end_idx]
