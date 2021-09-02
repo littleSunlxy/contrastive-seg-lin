@@ -345,8 +345,7 @@ def evaluate_input_split(model, loader, epoch, configer, logger):
 
     model.eval()
     save_path = epoch
-    import pdb;
-    pdb.set_trace()
+
     logger.info('[Epoch {} Eval Summary]:'.format(epoch))
     # pbar = tqdm(total=len(loader))
     tic = time.perf_counter()
@@ -392,9 +391,9 @@ def evaluate_input_split(model, loader, epoch, configer, logger):
                 scores = torch.zeros(1, configer.get('data', 'num_classes'), split_height, split_width).cuda()
                 # img_split_ori = batch_data['img_ori'][split_id]
                 img_resized_list = img_resized_split_list[split_id]
-
-                torch.cuda.synchronize()
-                start = time.time()
+                #
+                # torch.cuda.synchronize()
+                # start = time.time()
                 for img in img_resized_list:
                     img = img.cuda()
                     # print(img.size())
@@ -408,10 +407,10 @@ def evaluate_input_split(model, loader, epoch, configer, logger):
                     # scores = scores + scores_tmp / len(configer.get('xiashi', 'imgSizes'))
                 #                 scores[:, -1, :, :] = 0  # ignore the last category
 
-                torch.cuda.synchronize()
-                end = time.time()
-                print("spiltA inference time:", end - start)
-                exit()
+                # torch.cuda.synchronize()
+                # end = time.time()
+                # print("spiltA inference time:", end - start)
+                # exit()
 
                 _, pred_tmp = torch.max(scores, dim=1)
 
