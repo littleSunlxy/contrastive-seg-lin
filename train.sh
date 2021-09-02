@@ -47,7 +47,7 @@ python -u main_contrastive.py --configs ${CONFIGS} \
 
 export CFG_1="configs/meituan_xiashi/mergev1.4_val_nosplit.yaml"
 export CFG_2="configs/meituan_xiashi/mergev1.4_val_splitA.yaml"
-export GPUS= 4,5,6,7
+export GPUS=4,5,6,7
 echo "-----------------------------------------------"
 echo "Start to valid no-split experiment"
 echo "-----------------------------------------------"
