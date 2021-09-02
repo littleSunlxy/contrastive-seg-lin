@@ -1,0 +1,143 @@
+DATASET:
+  # ------------------------ Data crop -----------------------
+  crop_type: "crop_A"
+
+  # -------------------------  Train ---------------------------
+  ### 1-6
+  list_train: "/workdir/hrr/data/xiashi_data/segdata_6/mergev1.4/train_1-6_mergev1.4.odgt"
+  train_data_name: "data1-6_mergev1.4_5378"
+
+#  list_train: "/workdir/data/xiashi_data/segdata_6/mergev1.4/train_1-6_mergev1.4.odgt"
+#  train_data_name: "data1-6_mergev1.4_5378"
+
+
+  # ------------------------ Val ---------------------------
+  list_val: "/workdir/hrr/data/xiashi_data/segdata_6/mergev1.4/test_1-6_mergev1.4.odgt"
+  val_data_name: "data1-6_mergedv1.4_1348" # for validation
+
+  csv_file: "/workdir/hrr/data/xiashi_data/class_dict_all_merged_20_v1.4.csv"
+
+#  list_val: "/workdir/data/xiashi_data/segdata_6/mergev1.4/test_1-6_mergev1.4.odgt"
+#  val_data_name: "data1-6_mergedv1.4_1348" # for validation
+#
+#  csv_file: "/workdir/data/xiashi_data/class_dict_all_merged_20_v1.4.csv"
+  num_class: 19 # 51 # 23
+
+
+  # ---------------------- Train --------------------------
+#   imgSizes: (800,)
+#   imgMaxSize: 1000
+
+#  imgSizes: (1000,)
+#  imgMaxSize: 1500
+  imgSizes: (2000,)
+  imgMaxSize: 2500
+
+
+  # ---------------------- Val ---------------------------
+#  imgValSizes: (1000,)
+#  imgValMaxSize: 1500
+
+  imgValSizes: (2000,)
+  imgValMaxSize: 2500
+
+  padding_constant: 8
+  segm_downsampling_rate: 1
+  random_flip: True
+
+
+MODEL:
+# # hrnet
+  arch: hrnet_ocr_v1
+  arch_decoder: "ocr"
+  arch_encoder: "hrnet"
+
+  use_teacher: False
+
+#  arch: hrnet_ocr.HRNet_Mscale
+#  arch_decoder: "ocr"
+#  arch_encoder: "hrnet"
+
+
+# twins
+#  arch: twins_s_mlp
+#  arch_decoder: "mlp"
+#  arch_encoder: "twins_s"
+
+#  # deeplabv3plus
+#  arch: deeplabv3plus_small
+#  arch_decoder: "aspp"
+#  arch_encoder: "res50"
+
+  # deeplabv3plus
+#  arch: deeplabv3plus
+#  arch_decoder: "aspp"
+#  arch_encoder: "res50"
+
+OCR:
+  if_object_mask: False
+
+
+TRAIN:
+  use_ohem: False
+  aux: True
+#  aux: False
+  aux_weight: 0.4
+  se_loss: False
+  se_weight: 0.0
+  metric_loss: False
+  metric_weight: 0.0
+  use_reweight: 0
+  data_crop: True
+
+
+  load_checkpoint: ''
+
+  batch_size_per_gpu: 2 # 16
+  num_epoch: 20
+  use_fp16: False
+  # use_fp16: True
+  # use_fp16_O2: True
+  use_fp16_O2: False
+  start_epoch: 0
+  # epoch_iters: 2000
+  epoch_iters: 1000
+  optim: "SGD"
+  # lr_encoder: 0.02
+  # lr_decoder: 0.01
+  lr_decoder: 0.005
+  # lr_decoder: 0.0025
+  lr_pow: 0.9
+  beta1: 0.9
+  weight_decay: 1e-4
+  deep_sup_scale: 0.4
+  fix_bn: False
+  workers: 32 # 16
+  disp_iter: 20
+  seed: 304
+  warmup_steps: 10 # 1000
+  warmup_start_lr: 1e-5
+  monitor: True
+
+
+VAL:
+  checkpoint: ""
+  multi_checkpoints: "20~20"
+
+#  visualize: True
+  visualize: False
+  workers: 16 # 16
+  save_labelfile: False
+
+
+#  val_height: 120  # if not given in path name and all images belong to the same height, set val height. this parameter is used when use_split==True
+  val_height: -1
+
+  # use_split: False
+  use_split: True
+
+
+
+
+
+

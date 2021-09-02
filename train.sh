@@ -31,7 +31,7 @@ python -u main_contrastive.py --configs ${CONFIGS} \
                        --log_to_file n \
                        --backbone ${BACKBONE} \
                        --model_name ${MODEL_NAME} \
-                       --gpu 5\
+                       --gpu 4 5 6 7 \
                        --use_xiashi_dataset \
                        --data_dir ${DATA_DIR} \
                        --loss_type ${LOSS_TYPE} \
@@ -43,3 +43,17 @@ python -u main_contrastive.py --configs ${CONFIGS} \
                        --distributed \
                        --base_lr ${BASE_LR} \
                        2>&1 | tee ${LOG_FILE}
+
+
+export CFG_1="configs/meituan_xiashi/mergev1.4_val_nosplit.yaml"
+export CFG_2="configs/meituan_xiashi/mergev1.4_val_splitA.yaml"
+
+echo "-----------------------------------------------"
+echo "Start to valid no-split experiment"
+echo "-----------------------------------------------"
+python scripts/reduce_val_results.py --cfg=$CFG_1  ${CONFIGS} --gpus=$GPUS --export --type "no_split"
+
+echo "-----------------------------------------------"
+echo "Start to valid split-A experiment"
+echo "-----------------------------------------------"
+python scripts/reduce_val_results.py --cfg=$CFG_2  ${CONFIGS} --gpus=$GPUS --export --type "split-A"

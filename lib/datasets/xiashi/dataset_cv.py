@@ -752,6 +752,7 @@ class ValDataset_Split_cv(BaseDataset_cv):
         segm_path = os.path.join(self.root_dataset, this_record['fpath_segm'])
         img = cv2.imread(image_path)
         segm = cv2.imread(segm_path, cv2.IMREAD_UNCHANGED)
+        segm = cv2.imread(segm_path, cv2.IMREAD_UNCHANGED)
         ### convert for augmentation
         img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)  # h,w,c
 
