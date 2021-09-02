@@ -257,10 +257,10 @@ def evaluate(model, loader, epoch, configer, logger):
         all_time_meter.update(time.perf_counter() - tic)
         tic = time.perf_counter()
 
-        logger.info(
-            'Rank[{}] Epoch: [{}][{}/{}] Mean IOU (except_ignore & people): {:.4f}, Mean IoU: {:.4f}, Accuracy: {:.2f}%, Data Time: {:.4f}s, Inference Time: {:.4f}s, Total Time: {:.4f}s'
-                .format(dist.get_rank(), epoch, i, len(loader), iou[:-2].mean(), iou.mean(), acc_meter.average() * 100,
-                        data_time.average(), time_meter.average(), all_time_meter.average()))
+        # logger.info(
+        #     'Rank[{}] Epoch: [{}][{}/{}] Mean IOU (except_ignore & people): {:.4f}, Mean IoU: {:.4f}, Accuracy: {:.2f}%, Data Time: {:.4f}s, Inference Time: {:.4f}s, Total Time: {:.4f}s'
+        #         .format(dist.get_rank(), epoch, i, len(loader), iou[:-2].mean(), iou.mean(), acc_meter.average() * 100,
+        #                 data_time.average(), time_meter.average(), all_time_meter.average()))
     # torch.cuda.synchronize()
 
     for i, _iou in enumerate(iou):
@@ -484,9 +484,9 @@ def evaluate_input_split(model, loader, epoch, configer, logger):
 
         all_time_meter.update(time.perf_counter() - tic)
         tic = time.perf_counter()
-        logger.info('Rank[{}] Epoch: [{}][{}/{}] Mean IOU (except_ignore & people): {:.4f}, Mean IoU: {:.4f}, Accuracy: {:.2f}%, Data Time: {:.4f}s, Inference Time: {:.4f}s, Total Time: {:.4f}s'
-                .format(dist.get_rank(), epoch, i, len(loader), iou[:-2].mean(), iou.mean(), acc_meter.average() * 100,
-                        data_time.average(), time_meter.average(), all_time_meter.average()))
+        # logger.info('Rank[{}] Epoch: [{}][{}/{}] Mean IOU (except_ignore & people): {:.4f}, Mean IoU: {:.4f}, Accuracy: {:.2f}%, Data Time: {:.4f}s, Inference Time: {:.4f}s, Total Time: {:.4f}s'
+        #         .format(dist.get_rank(), epoch, i, len(loader), iou[:-2].mean(), iou.mean(), acc_meter.average() * 100,
+        #                 data_time.average(), time_meter.average(), all_time_meter.average()))
     # torch.cuda.synchronize()
 
     for i, _iou in enumerate(iou):
