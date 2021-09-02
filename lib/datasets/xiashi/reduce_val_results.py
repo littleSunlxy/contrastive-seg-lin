@@ -7,7 +7,7 @@ import pickle
 import pandas as pd
 import numpy as np
 
-
+print (os.getcwd())
 from lib.datasets.xiashi.default import _C as cfg
 from collections import defaultdict
 
