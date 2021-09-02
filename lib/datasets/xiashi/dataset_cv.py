@@ -792,25 +792,26 @@ class ValDataset_Split_cv(BaseDataset_cv):
             img_ori_split_list.append(np.array(img_split))
 
             img_resized_list = []
-            for this_short_size in self.imgValSizes:
-                # calculate target height and width
-                scale = min(this_short_size / float(min(ori_height, ori_width)),
-                            self.imgValMaxSize / float(max(ori_height, ori_width)))
-                target_height, target_width = int(ori_height * scale), int(ori_width * scale)
+            # TODO： multi-scale inference
+            this_short_size = self.imgValSizes
+            # calculate target height and width
+            scale = min(this_short_size / float(min(ori_height, ori_width)),
+                        self.imgValMaxSize / float(max(ori_height, ori_width)))
+            target_height, target_width = int(ori_height * scale), int(ori_width * scale)
 
-                # to avoid rounding in network
-                target_width = self.round2nearest_multiple(target_width, self.padding_constant)
-                target_height = self.round2nearest_multiple(target_height, self.padding_constant)
+            # to avoid rounding in network
+            target_width = self.round2nearest_multiple(target_width, self.padding_constant)
+            target_height = self.round2nearest_multiple(target_height, self.padding_constant)
 
-                # resize images
-                # img_resized = imresize(img_split, (target_width, target_height), interp='bilinear')
-                # img_resized = F.resize(img_split, target_height, target_width, interpolation=cv2.INTER_LINEAR)
-                img_resized = F.resize(img_split, target_height, target_width, interpolation=cv2.INTER_LINEAR)
+            # resize images
+            # img_resized = imresize(img_split, (target_width, target_height), interp='bilinear')
+            # img_resized = F.resize(img_split, target_height, target_width, interpolation=cv2.INTER_LINEAR)
+            img_resized = F.resize(img_split, target_height, target_width, interpolation=cv2.INTER_LINEAR)
 
-                # image transform, to torch float tensor 3xHxW
-                img_resized = self.img_transform(img_resized)
-                img_resized = torch.unsqueeze(img_resized, 0)
-                img_resized_list.append(img_resized)
+            # image transform, to torch float tensor 3xHxW
+            img_resized = self.img_transform(img_resized)
+            img_resized = torch.unsqueeze(img_resized, 0)
+            img_resized_list.append(img_resized)
             img_resized_list = [x.contiguous() for x in img_resized_list]
 
             img_resized_split_list.append(img_resized_list)
