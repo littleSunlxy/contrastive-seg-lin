@@ -6,6 +6,7 @@ MODEL_ROOT="/home/hadoop-automl/cephfs/data/linxinyang/models"
 DATA_DIR="${DATA_ROOT}"
 SAVE_DIR="${SCRATCH_ROOT}/cityscapes_seg_results/"
 
+
 BACKBONE="hrnet48"
 
 CONFIGS="configs/meituan_xiashi/H_48_D_4.json"
