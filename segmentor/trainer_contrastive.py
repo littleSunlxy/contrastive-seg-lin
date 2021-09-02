@@ -188,9 +188,9 @@ class Trainer(object):
 
         if hasattr(self.train_loader.sampler, 'set_epoch'):
             self.train_loader.sampler.set_epoch(self.configer.get('epoch'))
-        print(self.train_loader)
+        # print(self.train_loader)
         for i, data_dict in enumerate(self.train_loader):
-            print("i")
+            # print("i")
             if self.configer.get('lr', 'metric') == 'iters':
                 self.scheduler.step(self.configer.get('iters'))
             else:
