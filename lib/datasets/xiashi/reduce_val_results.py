@@ -8,7 +8,7 @@ import pandas as pd
 import numpy as np
 
 
-from lib.datasets.xiashi.defaults import _C as cfg
+from defaults import _C as cfg
 from collections import defaultdict
 
 import sys
