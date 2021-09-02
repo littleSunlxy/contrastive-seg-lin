@@ -185,10 +185,10 @@ class Trainer(object):
         if "swa" in self.configer.get('lr', 'lr_policy'):
             normal_max_iters = int(self.configer.get('solver', 'max_iters') * 0.75)
             swa_step_max_iters = (self.configer.get('solver', 'max_iters') - normal_max_iters) // 5 + 1
-        print("here!!!!!!!!!!")
+
         if hasattr(self.train_loader.sampler, 'set_epoch'):
             self.train_loader.sampler.set_epoch(self.configer.get('epoch'))
-        print("now!!!!!!!!!!")
+        print(self.train_loader)
         for i, data_dict in enumerate(self.train_loader):
             print("i")
             if self.configer.get('lr', 'metric') == 'iters':
