@@ -123,7 +123,7 @@
     },
     "solver": {
       "display_iter": 20,
-      "test_interval": 40,
+      "test_interval": 4000,
       "max_iters": 40000
     },
     "optim": {
