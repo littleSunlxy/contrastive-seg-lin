@@ -115,6 +115,7 @@ class DataLoader(object):
                                                        pin_memory=True,
                                                        drop_last=True,
                                                        )
+            print(trainloader.root_dataset)
         else:
             if self.configer.exists('data', 'use_edge') and self.configer.get('data', 'use_edge') == 'ce2p':
                 """
