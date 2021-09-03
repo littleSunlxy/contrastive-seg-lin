@@ -121,7 +121,7 @@ TRAIN:
 
 VAL:
   checkpoint: ""
-  multi_checkpoints: "0~0"
+  multi_checkpoints: "1~1"
 
 #  visualize: True
   visualize: False
