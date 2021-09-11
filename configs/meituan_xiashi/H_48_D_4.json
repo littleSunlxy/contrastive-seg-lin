@@ -89,7 +89,7 @@
     },
     "checkpoints": {
       "checkpoints_name": "fs_baseocnet_cityscapes_seg",
-      "checkpoints_dir": "./checkpoints/cityscapes",
+      "checkpoints_dir": "./checkpoints/xiashi",
       "save_iters": 1000
     },
     "network":{

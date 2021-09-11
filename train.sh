@@ -4,7 +4,7 @@ ASSET_ROOT=${DATA_ROOT}
 MODEL_ROOT="/home/hadoop-automl/cephfs/data/linxinyang/models"
 
 DATA_DIR="${DATA_ROOT}"
-SAVE_DIR="${SCRATCH_ROOT}/cityscapes_seg_results/"
+SAVE_DIR="${SCRATCH_ROOT}/xiashi_seg_results/"
 
 
 BACKBONE="hrnet48"
@@ -48,7 +48,7 @@ python -u main_contrastive.py --configs ${CONFIGS} \
 
 export CFG_1="configs/meituan_xiashi/mergev1.4_val_nosplit.yaml"
 export CFG_2="configs/meituan_xiashi/mergev1.4_val_splitA.yaml"
-export GPUS=4,5,6,7
+export GPUS=0,1,2,3,4,5,6,7
 echo "-----------------------------------------------"
 echo "Start to valid no-split experiment"
 echo "-----------------------------------------------"
