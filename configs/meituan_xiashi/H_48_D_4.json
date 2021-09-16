@@ -103,7 +103,8 @@
         "corr_loss": 0.01,
         "aux_loss": 0.4,
         "seg_loss": 1.0
-      }
+      },
+      "resume":
     },
     "logging": {
       "logfile_level": "info",
