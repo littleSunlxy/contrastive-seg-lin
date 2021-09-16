@@ -52,7 +52,7 @@ export GPUS=0,1,2,3,4,5,6,7
 echo "-----------------------------------------------"
 echo "Start to valid no-split experiment"
 echo "-----------------------------------------------"
-python lib/datasets/xiashi/reduce_val_results.py --cfg=$CFG_1 --gpus=$GPUS --exort --type "no_split"
+python lib/datasets/xiashi/reduce_val_results.py --cfg=$CFG_1 --gpus=$GPUS --export --type "no_split"
 
 echo "-----------------------------------------------"
 echo "Start to valid split-A experiment"
